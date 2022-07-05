@@ -9,7 +9,7 @@ class User < ApplicationRecord  #attr = attribute(属性）
             format: { with: VALID_EMAIL_REGEX }, #VALID_EMAIL_REGEX定数に正規表現を定義し、formatバリデーションを追加し、
             uniqueness: true                     #withで正規表現を指定することでメールアドレスのフォーマットを制限しています。
   has_secure_password
-  validates :password, presence: true, length: { minimum: 6 }
+  validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
                       #presence: trueを用いることでそのカラムの値が存在するかどうかをチェックできる。
   # 渡された文字列のハッシュ値を返します。
   def User.digest(string)
