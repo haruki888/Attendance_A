@@ -1,4 +1,4 @@
-<header class = "navber navbar-fixed-top navbar-inverse" id= "header">
+<header class = "navbar navbar-fixed-top navbar-inverse" id= "header">
   <div class = "container">
     <%= link_to "勤怠システム", root_path, id: "logo" %>
     <nav>
@@ -14,14 +14,12 @@
             <a href= "#" class= "dropdown-toggle header-list" data-toggle= "dropdown" id= "dropdown-title">
               アカウント<b class= "caret"></b></a>
             <ul class= "dropdown-menu">
-              <li><%= link_to "勤怠", '#' %></li>
+              <li><%= link_to "勤怠", current_user %></li>
               <li><%= link_to "アカウント情報の更新", edit_user_path(current_user) %></li>
               <li class= "divider"></li>
               <li><%= link_to "ログアウト", logout_path, method: :delete %></li>
             </ul>
           </li>
-        <% else %>
-          <li><%= link_to "ログイン", login_path %></li>
         <% end %>
       </ul>
     </nav>
