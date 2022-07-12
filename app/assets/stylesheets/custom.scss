@@ -68,15 +68,6 @@ p {
   text-decoration: none;
 }
 
-debug_dump {
-  clear: both; /*左寄せ、または右寄せされた全ての要素に対する回り込みを解除*/
-  float: left;
-  width: 100%;
-  margin-top: 45%;
-  -moz-box-sizing: border-box; /*Chrome/Safari/ほとんどのiOSブラウザ, ベンダープレフィックス(接頭辞)の1つ*/
-  -webkit-box-sizing: border-box; /*Firefox*/
-  box-sizing: border-box;
-}
 
 /* error_messages */
 
@@ -93,4 +84,10 @@ debug_dump {
   .form-control {
     color: $state-danger-text;
   }
+}
+
+/*モーダルウィンドウの位置調整*/
+
+.modal-dialog-center {
+  padding-top: 10px;
 }

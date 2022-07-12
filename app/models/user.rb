@@ -8,6 +8,9 @@ class User < ApplicationRecord  #attr = attribute(属性）
   validates :email, presence: true, length: { maximum: 100 },
             format: { with: VALID_EMAIL_REGEX }, #VALID_EMAIL_REGEX定数に正規表現を定義し、formatバリデーションを追加し、
             uniqueness: true                     #withで正規表現を指定することでメールアドレスのフォーマットを制限しています。
+  validates :department, length: { in: 2..30 }, allow_blank: true
+  validates :basic_time, presence: true
+  validates :work_time, presence: true
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
                       #presence: trueを用いることでそのカラムの値が存在するかどうかをチェックできる。
@@ -50,7 +53,7 @@ class User < ApplicationRecord  #attr = attribute(属性）
   end                    #データベース                  #cookies　　　に保存されている。
 
   # ユーザーのログイン情報を破棄します。
-  def forgert
-    update_attribute(:remember_digest,nil)
+  def forget
+    update_attribute(:remember_digest, nil)
   end
 end
