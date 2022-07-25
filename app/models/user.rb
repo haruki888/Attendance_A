@@ -1,4 +1,6 @@
-class User < ApplicationRecord  #attr = attribute(属性）
+class User < ApplicationRecord
+  has_many :attendances, dependent: :destroy
+  #attr = attribute(属性）
   attr_accessor :remember_token #記憶トークンとユーザーをremember_tokenという仮想の属性を作成します。
   before_save { self.email = email.downcase } #selfはユーザーオブジェクトを指す
   
@@ -8,7 +10,7 @@ class User < ApplicationRecord  #attr = attribute(属性）
   validates :email, presence: true, length: { maximum: 100 },
             format: { with: VALID_EMAIL_REGEX }, #VALID_EMAIL_REGEX定数に正規表現を定義し、formatバリデーションを追加し、
             uniqueness: true                     #withで正規表現を指定することでメールアドレスのフォーマットを制限しています。
-  validates :department, length: { in: 2..30 }, allow_blank: true
+  validates :department, length: { in: 2..50 }, allow_blank: true
   validates :basic_time, presence: true
   validates :work_time, presence: true
   has_secure_password
