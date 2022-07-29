@@ -1,11 +1,18 @@
-/*ユーザー情報テーブル*/
+/* ユーザー情報テーブル */
 
 .user-table {
   vertical-align: middle;
   text-align: center;
 }
 
-/*ユーザー勤怠情報テーブル*/
+/* ユーザー情報下ボタン */
+
+.btn-users-show {
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+/* ユーザー勤怠情報テーブル */
 
 #table-attendances {
   th {
@@ -29,7 +36,7 @@
 }
 
 .label-user--edit {
-  margin-top :5px;
+  margin-top: 5px;
 }
 
 .btn-user--edit {
@@ -44,7 +51,7 @@
   }
 }
 
-/* 基本情報編集モーダルウィンドウ*/
+/* 基本情報編集モーダルウィンドウ */
 
 .label-basic-info {
   margin-top: 5px;
