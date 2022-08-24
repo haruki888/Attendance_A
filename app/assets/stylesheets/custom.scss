@@ -23,6 +23,7 @@ textarea {
   margin: 10px 0;
 }
 
+
 /* typography */
 
 h1, h2, h3, h4, h5, h6 {
@@ -33,6 +34,7 @@ h1 {
   font-size: 3em;
   letter-spacing: -2px;
   margin-bottom: 30px;
+  padding: 20px 0;
   text-align: center;
 }
 
@@ -121,16 +123,17 @@ p {
   border-radius: 5px;
 }
 
-/* debug */
+/*勤怠画面*/ 
 
-.debug_dump {
-  clear: both;
-  float: left;
-  width: 100%;
-  margin-top: 45px;
-  -moz-box-sizing:    border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing:         border-box;
+.wday0 {
+  color: red;
 }
 
+.wday6 {
+  color: blue;
+}
+
+#table-attendances {
+  with: auto;
+}
 
