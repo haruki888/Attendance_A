@@ -21,14 +21,15 @@
 </div>
 
 <div class="col-md-10 col-md-offset-1">
-　<%= will_paginate @users, previous_label: '前', next_label: '次' %>
+　<%= will_paginate @users, previous_label: '前へ', next_label: '次へ' %>
   <table class="table table-condensed table-hover" id="table-users">
     <tbody>
       <% @users.each do |user| %>
         <tr>
           <td><%= link_to user.name, user %>
             <% if current_user.admin? && !current_user?(user) %>
-              <span>  |  </span><%= link_to "削除", user, method: :delete, 
+              <span>  |  </span>
+              <%= link_to "削除", user, method: :delete, 
                 data: { confirm: "削除してよろしいですか？" } %>
             <% end %>
           </td>

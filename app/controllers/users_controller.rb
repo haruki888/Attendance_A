@@ -6,13 +6,11 @@ class UsersController < ApplicationController
   before_action :set_one_month, only: :show
 
   def index
-    @users = User.paginate(page: params[:page], per_page: 15). search(params[:search])
+    @users = User.paginate(page: params[:page], per_page: 17). search(params[:search])
     @users = @users.where('name LIKE ?', "%#{params[:search]}%") if params[:search].present?
   end
   
   def show
-    @first_day = Date.current.beginning_of_month
-    @last_day = @first_day.end_of_month
     @worked_sum = @attendances.where.not(started_at: nil).count
   end
   
@@ -60,9 +58,9 @@ class UsersController < ApplicationController
   
   def update_basic_info
     if @user.update_attributes(basic_info_params)
-      flash[:success] = "# { @user.name } の基本情報は更新しました。"
+      flash[:success] = "#{@user.name}の基本情報は更新しました。"
     else
-      flash[:danger] = "# { @user.name } の更新は失敗しました。<br>" + @user.errors.full_messages.join("<br>")
+      flash[:danger] = "#{@user.name}の更新は失敗しました。<br>" + @user.errors.full_messages.join("<br>")
     end
     redirect_to users_url
   end
