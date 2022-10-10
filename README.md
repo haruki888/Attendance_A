@@ -1,9 +1,7 @@
-# README
+# 勤怠システムを開発しよう！
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+これはセレブエンジニアサロンの教材で作られたサンプルアプリケーションです。
 
-Things you may want to cover:
 ## 開発環境
 
 * AWS Cloud9<br>
