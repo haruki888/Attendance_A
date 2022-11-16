@@ -42,6 +42,6 @@
   
   <div class = "center">
     <%= link_to "キャンセル", user_path(date: @first_day), class: "btn btn-lg btn-default" %>
-    <%= f.submit "編集を保存する", class:"btn btn-lg btn-primary" %>
+    <%= link_to "編集を保存する", attendances_update_one_month_user_path(date: @first_day), class:"btn btn-lg btn-primary" %>
   </div>
 <% end %>

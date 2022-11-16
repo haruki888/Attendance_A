@@ -82,11 +82,19 @@ class UsersController < ApplicationController
     @users = User.search(params[:search])
   end
   
-   def admin_or_correct_user
-      @user = User.find(params[:user_id]) if @user.blank?
-      unless current_user?(@user) || current_user.admin?
-        flash[:danger] = "編集権限がありません。"
-        redirect_to(root_url)
-      end
-   end
+  def admin_or_correct_user
+    @user = User.find(params[:user_id]) if @user.blank?
+    unless current_user?(@user) || current_user.admin?
+      flash[:danger] = "編集権限がありません。"
+      redirect_to(root_url)
+    end
+  end
+   
+  def user_login_required
+    unless logged_in? # ログインしていないとき
+      store_location # ここでURLを一時保存！
+      flash[:danger] = "ログインしてください" # フラッシュメッセージを表示
+      redirect_to login_url # ログインページに強制的に送る
+    end
+  end
 end

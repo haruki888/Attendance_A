@@ -117,11 +117,14 @@ p {
   color: blue;
 }
 
-#table-attendances {
-  with: auto;
-}
-
-.dropdown {
+.btn-default {
   margin-bottom: 10px;
 }
 
+li {
+  display: block;
+} 
+
+.link {
+  color: black ; 
+}
