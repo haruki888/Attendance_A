@@ -5,11 +5,11 @@
     <%= csrf_meta_tags %> <!--クロスサイトリクエストフォージェリ対策-->
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
-    <%= render 'layouts/shim' %>
+    <%= render 'layouts/shim' %><!-- HTML shimがこの1行で収まる -->
   </head>
 
   <body>
-    <%= render 'layouts/header' %>
+    <%= render 'layouts/header' %><!-- headerの内容がこの1行で収まる -->
     <div class = "container">
       <% flash.each do |message_type, msg| %>
         <div class = "alert alert-<%= message_type %>"><%= msg.html_safe %></div>

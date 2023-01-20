@@ -3,3 +3,5 @@ class AddEmployeeNumberToUsers < ActiveRecord::Migration[5.1]
     add_column :users, :employee_number, :integer, default: false
   end
 end
+
+#社員番号

@@ -12,18 +12,6 @@
   margin-bottom: 10px;
 }
 
-/* ユーザー勤怠情報テーブル */
-
-#table-attendances {
-  th {
-    vertical-align: middle;
-    text-align: center;
-  }
-  td {
-    vertical-align: middle;
-    text-align: center;
-  }
-}
 
 /* 入力フォーム */
 
@@ -51,6 +39,18 @@
   }
 }
 
+.csv-botton {
+  width: 22%;
+  margin-bottom: 20px;
+}
+
+.btn-secondary {
+  margin-bottom: 10px;
+}
+
+.input-group-btn {
+  width: 90%;
+}
 
 /* 基本情報編集 */
 
@@ -62,3 +62,10 @@
   margin: 15px 0;
   width: 30%;
 }
+
+/*基本モーダルウィンドウ*/
+
+.label-basic-info {
+  margin-top:5px;
+}
+

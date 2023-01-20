@@ -1,4 +1,4 @@
-module AttendancesHelper
+module AttendancesHelper  #ViewをDRY（Don’t Repeat Yourself）に作る
   
   def attendance_state(attendance)
       # 受け取ったAttendanceオブジェクトが当日と一致するか評価します。
@@ -7,12 +7,16 @@ module AttendancesHelper
       return '退勤' if attendance.started_at.present? && attendance.finished_at.nil?
     end
     #どれにも当てはまらなかった場合はfalseを返します。
-    false
+    return false
   end
   
-   # 出勤時間と退勤時間を受け取り、在社時間を計算して返します。
+   # 出勤時間と退勤時間をn受け取り、在社時間を計算して返します。
   def working_times(start, finish)
-     format("%.2f", (((finish - start) / 60) / 60.0))
+    format("%.2f", (((finish - start) / 60) / 60.0))
+  end
+  
+  def working_overtime(start, finish)
+    format("%.2f", (((finish - start) / 60) / 60.0) - (60.0*8))
   end
   
    # 不正な値があるか確認する

@@ -117,14 +117,25 @@ p {
   color: blue;
 }
 
-.btn-default {
-  margin-bottom: 10px;
-}
-
 li {
   display: block;
 } 
 
 .link {
   color: black ; 
+}
+
+// .btn-primary {
+  // margin: 2px;
+// } 
+
+.btn-set {
+  width: fit-content;
+  gap: 1em; 
+}
+
+/* モーダルウインドウの位置調整 */
+
+.modal-dialog-center {
+  padding-top: 10%;
 }

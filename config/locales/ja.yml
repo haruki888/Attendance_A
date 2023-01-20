@@ -206,5 +206,6 @@ ja:
       short: "%m/%d %H:%M"
       time: "%H：%M"
       hour: "%H"
+      minute: "%M"
       min: "%M"
     pm: 午後

@@ -10,6 +10,11 @@ class ApplicationController < ActionController::Base
   def set_user
     @user = User.find(params[:id])
   end
+
+  # paramsハッシュからユーザーを取得します。
+  def set_user_id
+    @user = User.find(params[:user_id])
+  end
   
   # ログイン済みのユーザーか確認します。
   def logged_in_user
@@ -20,6 +25,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def admin_user
+    if logged_in?
+      redirect_to(userss_url)
+    end
+  end
+  
   # アクセスしたユーザーが現在ログインしているユーザーか確認します。
   def correct_user
     redirect_to(root_url) unless current_user?(@user)
@@ -29,6 +40,24 @@ class ApplicationController < ActionController::Base
   def admin_user
     redirect_to root_url unless current_user.admin?
   end
+
+  # 管理権限者、または現在ログインしているユーザーを許可します。
+  def admin_or_correct_user
+    @user = User.find(params[:user_id]) if @user.blank?
+    unless current_user?(@user) || current_user.admin?
+      flash[:danger] = "編集権限がありません。"
+      redirect_to(root_url)
+    end
+  end
+  
+  #管理者の勤怠画面表示不可
+  def admin_impossible
+    if current_user.admin?
+      flash[:danger] = "編集権限がありません。"
+      redirect_to root_url
+    end
+  end
+
 
   def set_one_month
     @first_day = params[:date].nil? ?
