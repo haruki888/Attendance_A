@@ -23,12 +23,15 @@
              </thead>
              <tbody>
                <% attendaces each do |day| %>
-               <tr>
-                 <td><%= day.worked_on.month %>月</td>
-                 <td><%= attendance.select :request_change_status,["なし", "申請中", "承認", "否認"] %></td>
-                 <td><%= attendance.check_box :change_check %></td>
-                 <td><%= link_to "確認", user_path(user, date: worked_on.beginning_of_month), class: btn btn-primary %></td>
-               </tr>
+                 <%= f.fields_for ,"attendance[]", day do |attendance| %>
+                   <tr>
+                     <td><%= day.worked_on.month %>月</td>
+                     <td><%= attendance.select :request_change_status,["なし", "申請中", "承認", "否認"] %></td>
+                     <td><%= attendance.check_box :change_check %></td>
+                     <td><%= link_to "確認", user_path(user, date: worked_on.beginning_of_month), class: btn btn-primary %></td>
+                   </tr>
+                 <% end %>
+               <% end %>
              </tbody>
            </table>
            <%= f.submit yeild(:btn_text), class :btn btn-primary %>
