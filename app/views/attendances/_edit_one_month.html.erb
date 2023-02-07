@@ -1,0 +1,40 @@
+<% provide(:btn_text, '変更を送信する') %>
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+      <h1 class="modal-title">【#{user.name}からの1ヶ月分勤怠申請】</h1>
+    </div>
+    <div class="modal-body">
+      <div class="row"><!-- 横並びにしたいコンテンツがある時使用 -->
+        <div class= "col col-md-12">
+         <%= form_with(model: @attendance, url: update_one_month_approval_user_attendance_path(@user), method: :patch, local: true) do |f| %>
+           <table class= "table table-bordered">
+             <thead>
+               <tr>
+                 <th>月</th>
+                 <th>指示者確認㊞</th>
+                 <th>変更</th>
+                 <th>勤怠を確認する</th>
+               </tr>
+             </thead>
+             <tbody>
+               <% attendaces each do |day| %>
+               <tr>
+                 <td><%= day.worked_on.month %>月</td>
+                 <td><%= attendance.select :request_change_status,["なし", "申請中", "承認", "否認"] %></td>
+                 <td><%= attendance.check_box :change_check %></td>
+                 <td><%= link_to "確認", user_path(user, date: worked_on.beginning_of_month), class: btn btn-primary %></td>
+               </tr>
+             </tbody>
+           </table>
+           <%= f.submit yeild(:btn_text), class :btn btn-primary %>
+         <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

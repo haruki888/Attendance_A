@@ -37,7 +37,7 @@
               <% end %>  
             </td>
             <td><%= attendance.text_field :note, class: "form-control" %></td>
-            <td><%= attendance.collection_select(:request_confirmation_superior, @superiors, :id, :name,
+            <td><%= attendance.collection_select(:request_change_superior, @superiors, :id, :name,
                                                 { include_blank: true, selected: nil }) %>
             </td>                                    <!--空白-->        <!--初期値-->
           </tr>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20230120132410) do
+ActiveRecord::Schema.define(version: 20230131123847) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -27,9 +27,13 @@ ActiveRecord::Schema.define(version: 20230120132410) do
     t.string "one_month_request_status"
     t.string "one_month_approval_superior"
     t.string "one_month_approval_status"
-    t.string "request_confirmation_superior"
+    t.boolean "change_check", default: false
     t.string "request_change_superior"
     t.string "request_change_status"
+    t.datetime "before_started_at"
+    t.datetime "before_finished_at"
+    t.datetime "after_started_at"
+    t.datetime "after_finished_at"
     t.string "request_overtime_superior"
     t.string "request_overtime_status"
     t.boolean "next_day", default: false
@@ -37,6 +41,12 @@ ActiveRecord::Schema.define(version: 20230120132410) do
     t.boolean "overtime_check", default: false
     t.string "work_description"
     t.index ["user_id"], name: "index_attendances_on_user_id"
+  end
+
+  create_table "bases", force: :cascade do |t|
+    t.integer "base_number"
+    t.string "base_name"
+    t.string "base_type"
   end
 
   create_table "users", force: :cascade do |t|
@@ -47,13 +57,13 @@ ActiveRecord::Schema.define(version: 20230120132410) do
     t.string "password_digest"
     t.string "remember_digest"
     t.boolean "admin", default: false
-    t.datetime "basic_work_time", default: "2023-01-19 23:00:00"
-    t.datetime "work_time", default: "2023-01-19 22:30:00"
+    t.datetime "basic_work_time", default: "2023-02-03 23:00:00"
+    t.datetime "work_time", default: "2023-02-03 22:30:00"
     t.boolean "superior", default: false
     t.integer "employee_number", default: 0
     t.string "uid"
-    t.datetime "designated_work_start_time", default: "2023-01-19 23:30:00"
-    t.datetime "designated_work_end_time", default: "2023-01-20 08:30:00"
+    t.datetime "designated_work_start_time", default: "2023-02-03 23:30:00"
+    t.datetime "designated_work_end_time", default: "2023-02-04 08:30:00"
     t.string "affiliation"
     t.index ["email"], name: "index_users_on_email", unique: true
   end

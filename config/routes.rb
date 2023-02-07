@@ -19,24 +19,28 @@ Rails.application.routes.draw do
       get 'attendances/edit_one_month'       #勤怠編集画面
       patch 'attendances/update_one_month'   #勤怠編集画面登録
       
+      get 'attendance/commuting_employee'    #出勤中社員一覧
+      
     end
       resources :attendances, only: :update do
-          member do
-            get 'edit_request_overtime'      #残業申請
-            patch 'update_request_overtime'  #残業申請登録
-            
-            get 'edit_overtime_approval'     #残業承認
-            patch 'update_overtime_approval' #残業承認登録
-            
-            get 'edit_one_month_approval'    #1ヶ月の勤怠承認
-            patch 'update_one_month_approval'#1ヶ月の勤怠承認登録
-            
-            get 'edit_request_change'        #勤怠変更申請
-            patch 'update_request_change'    #勤怠変更申請登録
-            
-            get 'edit_fix_log'               #勤怠修正ログ (承認済)
-          end
+        member do
+          get 'edit_request_overtime'      #残業申請
+          patch 'update_request_overtime'  #残業申請登録
+          
+          get 'edit_overtime_approval'     #残業承認
+          patch 'update_overtime_approval' #残業承認登録
+          
+          get 'edit_one_month_approval'    #1ヶ月の勤怠承認
+          patch 'update_one_month_approval'#1ヶ月の勤怠承認登録
+          
+          get 'edit_request_change'        #勤怠変更申請
+          patch 'update_request_change'    #勤怠変更申請登録
+          
+          get 'edit_fix_log'               #勤怠修正ログ (承認済)
+        end
       end
+    end
+    
+    resources :bases
   end  
-end
 

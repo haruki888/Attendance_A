@@ -8,9 +8,14 @@ class AddColumnsToAttendances < ActiveRecord::Migration[5.1]
     add_column :attendances, :one_month_approval_status, :string
     
     #勤怠変更、確認申請
-    add_column :attendances, :request_confirmation_superior, :string
-    add_column :attendances, :request_change_superior, :string
+    add_column :attendances, :change_check, :boolean, default: false
+    add_column :attendances, :request_change_superior, :string      
     add_column :attendances, :request_change_status, :string
+    add_column :attendances, :before_started_at, :datetime
+    add_column :attendances, :before_finished_at, :datetime
+    add_column :attendances, :after_started_at, :datetime         
+    add_column :attendances, :after_finished_at, :datetime
+    
    
     #残業申請
     add_column :attendances, :request_overtime_superior, :string

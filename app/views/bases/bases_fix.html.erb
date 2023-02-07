@@ -1,0 +1,27 @@
+<% provide(:title, "拠点一覧") %>
+
+<div class = container>  
+  <h1>拠点一覧</h1>
+  <table class = "table table-bordered table-condensed table-hover">
+    <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th>拠点番号</th>
+        <th>拠点名</th>
+        <th>拠点種類</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @bases.each do |base| %>
+        <tr>
+          <td><%= link_to "修正", "#"(@user.base), remote: true, class: "btn btn-primary" %></td>
+          <td><%= link_to "削除", "#"(@user.base), remote: true, class: "btn btn-primary" %></td>
+          <td><%= user.base_number %></td>
+          <td><%= user.base_name %></td>
+          <td><%= user.base_type %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

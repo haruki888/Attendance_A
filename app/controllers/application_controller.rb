@@ -24,12 +24,6 @@ class ApplicationController < ActionController::Base
       redirect_to login_url
     end
   end
-
-  def admin_user
-    if logged_in?
-      redirect_to(userss_url)
-    end
-  end
   
   # アクセスしたユーザーが現在ログインしているユーザーか確認します。
   def correct_user
@@ -50,10 +44,10 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  #管理者の勤怠画面表示不可
-  def admin_impossible
+  # 管理者は勤怠画面と編集の権限はありません。
+  def no_authority_admin
     if current_user.admin?
-      flash[:danger] = "編集権限がありません。"
+      flash[:danger] = "権限がありません。"
       redirect_to root_url
     end
   end

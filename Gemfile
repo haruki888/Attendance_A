@@ -17,6 +17,7 @@ gem 'turbolinks',   '~> 5'
 gem 'jbuilder',     '~> 2.5'
 gem 'rounding'#時間単位の区切り設定
 gem 'roo'
+gem 'pry-rails'#binding.pry(debug)
 
 group :development, :test do
   gem 'sqlite3', '1.3.13'

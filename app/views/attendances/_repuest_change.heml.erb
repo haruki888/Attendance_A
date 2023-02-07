@@ -1,0 +1,71 @@
+<% provide(:btn_text, '変更を送信する') %>
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+      <h1 class="modal-title">【#{user.name}からの勤怠変更申請】</h1>
+    </div>
+    <div class="modal-body">
+      <div class="row"><!-- 横並びにしたいコンテンツがある時使用 -->
+        <div class= "col col-md-12">
+         <%= form_with(model: @attendance, url: update_request_change_user_attendance_path(@user), method: :patch, local: true) do |f| %>
+           <table class= "table table-bordered">
+             <thead>
+               <tr>
+                 <th>日付</th>
+                 <th>曜日</th>
+                 <th>変更前</th>
+                 <th>変更後</th>
+                 <th>備考</th>
+                 <th>指示者確認㊞</th>
+                 <th>変更</th>
+                 <th>勤怠を確認する</th>
+               </tr>
+               <tr>
+                 <th>出社</th>
+                 <th>退社</th>
+                 <th>出社</th>
+                 <th>退社</th>
+               </tr>               
+               <tr>
+                 <th>時</th>
+                 <th>分</th>
+                 <th>時</th>
+                 <th>分</th>
+                 <th>時</th>
+                 <th>分</th>
+                 <th>時</th>
+                 <th>分</th>
+               </tr>               
+             </thead>
+             <tbody>
+               <tr>
+                 <td><%= l(@attendance.worked_on, format: :short) %></td>
+                 <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
+                 <!--変更前-->
+                 <td><%= day.started_at, format: : hour if day.started_at.present? %></td>
+                 <td><%= day.started_at, format: : minute) if day.started_at.present? %></td>
+                 <td><%= day.finished_at, format: : hour) if day.finished_at.present? %></td>
+                 <td><%= day.finished_at, format: : minute) if day.finished_at.present? %></td>
+                 <!--変更後-->
+                 <td><%= day.after_started_at, format: : hour if day.after_started_at.present? %></td>
+                 <td><%= day.after_started_at, format: : minute) if day.after_started_at.present? %></td>
+                 <td><%= day.after_finished_at, format: : hour) if day.after_finished_at.present? %></td>
+                 <td><%= day.after_finished_at, format: : minute) if day.after_finished_at.present? %></td>
+                 <td><%= day.note %></td>
+                 <td><%= attendance.select :request_change_status,["なし", "申請中", "承認", "否認"] %></td>
+                 <td><%= attendance.check_box :change_check %></td>
+                 <td><%= link_to "確認", user_path(user, date: worked_on.beginning_of_month), class: btn btn-primary %></td>
+               </tr>
+             </tbody>
+           </table>
+           <%= f.submit yeild(:btn_text), class :btn btn-primary btn-block %>
+         <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
