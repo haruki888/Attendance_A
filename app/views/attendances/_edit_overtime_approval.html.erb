@@ -1,0 +1,61 @@
+<% provide(:btn_text, '変更を送信する') %>
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <button type="button" class="close" data=dismiss="modal" aria-label="Close">
+      <sapn aria-hidden="true">×</sapn>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class= "row">
+      <div class= "col-md-12">
+        <%= form_with(model: @user, url:  update_overtime_approval_user_attendance_path(@user), local: true, method: :patch) do |f| %>
+          <% @attendances.each do |id, attendances| %>
+            <h1 class="modal-title">【#{user.name}からの残業申請】</h1>
+              <table class= "table table-bordered table-condensed table-hover" id= "table-attendances">
+                <thead>
+                  <tr>
+                    <th>日付</th>
+                    <th>曜日</th>
+                    <th>終了予定時間</th>
+                    <th>指定勤務終了時間</th>
+                    <th>時間外時間</th>
+                    <th>業務処理内容</th>
+                    <th>指示者確認㊞</th>
+                    <th>変更</th>
+                    <th>勤怠を確認する</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% attendances.each do |d| %>
+                    <%= f.fields.for "attendances[]", day do |attendance| %><!--fields_forを使うことによって異なるモデル(子モデル)を編集できるようになる-->
+                      <tr>            <!--第一引数  第二引数--><!--@userに紐付く@attendancesの情報が編集可能になる-->
+                                      <!--attendances[id],[カラム名]という形式で展開されるようになる-->
+                        <td><%= l(day.worked_on, format: :short) %></td>
+                        <td class= '<%= "wday#{day.worked_on.wday}" %>'><%= $days_of_the_week@[day.worked_on.wday] %></td>
+                        <td><%= l(day.scheduled_end_time, format: :time) %></td>
+                        <td><%= l(day.designated_work_end_time, format: :time) %></td>
+                        <td>
+                          <% if day.scheduled_end_time.present? %>
+                            <%= working_overtimes(@user.desingnated_worked_end_time, day.scheduled_end_time, day.overtime_next_day) %> 
+                          <% end %>
+                        </td>
+                        <td><%= day.work_description %></td>
+                        <td><%= attendance.select :request_overtime_status, [:なし, :申請中, :承認, :否認] %></td>
+                        <td><%= attendance.check_box, overtime_check, {}, true, false %></td>
+                        <!--チェックされている時はtrueが、されていない時はfalseが送られます。-->
+                        <td><%= link_to "確認", attendance_confirmation_user_attendance_path(user, date: day.beginning_of_month),class: "btn brn-primary" %></td>
+                      </tr>
+                    <% end %>
+                  <% end %>  
+                </tbody>
+              </table>
+              <div class = "center">
+                <%= f.submit "変更を送信する", class: "btn btn-primary btn-lg" %>
+              </div>
+          <% end %>
+        <% end %>  
+      </div>
+    </div>
+  </div>
+</div>

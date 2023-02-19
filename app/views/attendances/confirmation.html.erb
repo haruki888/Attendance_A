@@ -29,8 +29,8 @@
 <div class = "superior-link">
   <% if @user.superior && current_user %>
     <% if @one_month_sum > 0 %>
-      <%= link_to "【所属長承認申請のお知らせ】", edit_one_month_approval_user_attendance_path(@user), remote: true, class: "superior__btn" %><sapn style= "border: sold 2px red; color: red;"> 
-      <%= link_to "#{@one_month_sum}件の通知があります" %><br><!----Ajaxを簡単に実装する。サーバー側との通信を「非同期」で行い、通信結果によって「動的にページの一部だけ書き換える手法のこと」です。-->
+      <%= link_to "【所属長承認申請のお知らせ】", edit_one_month_approval_user_attendance_path(@user), remote: true, class: "superior__btn" %><sapn style= "border: sold 2px red; color: red;">
+      <%= link_to "#{@one_month_sum}件の通知があります" %><br>
     <% else %>
       <%= "【所属長承認申請のお知らせ】" %><br>
     <% end %>
@@ -91,7 +91,7 @@
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
-          <td><%= link_to "残業申請", edit_request_overtime_user_attendance_path(@user, day), local: true, class: "btn btn-primary" %></td>                                                                       
+          <td><%= link_to "残業申請", edit_request_overtime_user_attendance_path(@user, day), remote: true, class: "btn btn-primary" %></td>                                                                       
           <td><%= l(day.worked_on, format: :short) %></td>              <!--さまざまな処理を並列に行える通信(ajax)に出来る-->
           <td class='<%= "wday#{day.worked_on.wday}" %>'><%= $days_of_the_week[day.worked_on.wday] %></td>
           <td width = 100>

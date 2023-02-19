@@ -19,7 +19,7 @@ Rails.application.routes.draw do
       get 'attendances/edit_one_month'       #勤怠編集画面
       patch 'attendances/update_one_month'   #勤怠編集画面登録
       
-      get 'attendance/commuting_employee'    #出勤中社員一覧
+      get 'attendances/commuting_employee'    #出勤中社員一覧
       
     end
       resources :attendances, only: :update do
@@ -37,10 +37,11 @@ Rails.application.routes.draw do
           patch 'update_request_change'    #勤怠変更申請登録
           
           get 'edit_fix_log'               #勤怠修正ログ (承認済)
+          
+          get 'attendances_confirmation'    #上長勤怠確認
         end
       end
     end
     
     resources :bases
-  end  
-
+end

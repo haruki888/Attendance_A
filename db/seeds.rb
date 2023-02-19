@@ -8,7 +8,7 @@ User.create!(name: "管理者",
             admin: true)
             
 User.create!(name: "上長A",
-            email: "superior-a@email.com",
+            email: "sample-a@email.com",
             employee_number: "2",
             uid: "2",
             password: "password",
@@ -17,7 +17,7 @@ User.create!(name: "上長A",
             superior: true)
             
 User.create!(name: "上長B",
-            email: "superior-b@email.com",
+            email: "sample-b@email.com",
             employee_number: "3",
             uid: "3",
             password: "password",

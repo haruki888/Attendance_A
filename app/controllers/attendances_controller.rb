@@ -1,10 +1,10 @@
 class AttendancesController < ApplicationController
   
   include AttendancesHelper
-  before_action :set_user, only: [:edit_one_month, :update_one_month]
+  before_action :set_user, only: [:edit_one_month, :update_one_month,]
   before_action :set_user_id, only: [:update, :edit_request_overtime, :update_request_overtime, :edit_overtime_approval, :update_overtime_approval, :edit_one_month_approval, :update_one_month_approval, :edit_request_change, :update_request_change]
   before_action :logged_in_user, only: [:update, :edit_one_month]
-  before_action :admin_or_correct_user, only: [:update, :show, :edit_one_month, :update_one_month]
+  before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :no_authority_admin, only: :edit_one_month
   before_action :set_one_month, only: :edit_one_month
   
@@ -12,25 +12,26 @@ class AttendancesController < ApplicationController
   
   # 出退勤ボタンの勤務登録
   def update
-    @attendance = Attendance.includes(:user)	
+    @user = User.find(params[:user_id])
+    @attendance = Attendance.find(params[:id])
     # 出勤時間が未登録であることを判定します。
-      if @attendance.started_at.nil?
-        if @attendance.update_attributes(started_at: Time.current.floor_to(15.minutes))#15分単位で丸める
-          flash[:info] = "おはようございます！"
-        else
-          flash[:danger] = UPDATE_ERROR_MSG
-        end
-      elsif @attendance.finished_at.nil?
-        if @attendance.update_attributes(finished_at: Time.current.floor_to(15.minutes))#15分単位で丸める
-          flash[:info] = "お疲れ様でした。"
-        else
-          flash[:danger] = UPDATE_ERROR_MSG
-        end
+    if @attendance.started_at.nil?
+      if @attendance.update_attributes(started_at: Time.current.floor_to(15.minutes))#15分単位で丸める
+        flash[:info] = "おはようございます！"
+      else
+        flash[:danger] = UPDATE_ERROR_MSG
       end
-      redirect_to @user
+    elsif @attendance.finished_at.nil?
+      if @attendance.update_attributes(finished_at: Time.current.floor_to(15.minutes))#15分単位で丸める 
+        flash[:info] = "お疲れ様でした。"
+      else
+        flash[:danger] = UPDATE_ERROR_MSG
+      end
+    end
+    redirect_to @user
   end
   
-  # 勤怠修正ページ
+  # 勤怠変更申請
   def edit_one_month
     @superiors = User.where(superior: true).where.not(id: @user.id)
   end
@@ -61,18 +62,19 @@ class AttendancesController < ApplicationController
         flash[:info] = "勤怠編集はありません。"
         redirect_to user_url(date: params[:date]) and return
       end
-    end
+  end
     rescue ActiveRecord::RecordInvalid
       flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
       redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
     end
 
-  #残業申請
+  #残業申請モーダル
   def edit_request_overtime
-    @superiors = User.where(superior: true).where.not(id: @user.id)
+    @attendance = Attendance.find_by(worked_on: params[:date])
+    @attendances = @user.attendances.where(workd_on: params[:date])
   end
   
-  #残業申請更新
+  #残業申請更新モーダル
   def update_request_overtime
     if request_overtime_params[:scheduled_end_time].blank? ||
        request_overtime_params[:work_description].blank? ||
@@ -96,7 +98,10 @@ class AttendancesController < ApplicationController
     end
   end
   
-
+  #残業申請通知モーダル
+  def edit_overtime_approval
+    @attendances = Attendance.where(one_month_request_superior: @user.name, one_month_request_status: "申請中").order(:worked_on).group_by(&:user_id)
+  end
   # 勤怠ログ
   def edit_log
     if params[:worked_on].present?
@@ -116,13 +121,15 @@ class AttendancesController < ApplicationController
   
   # 1ヶ月分の勤怠情報を扱います。
   def attendances_params
-    params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+    params.require(:user).permit(attendances: [:started_at, :finished_at, :before_started_at, :before_finished_at, :note])[:attendances]
   end
   
   #残業申請
   def request_overtime_params
-    params.require(:attendance).permit(:scheduled_end_time, :next_day, :business_content, :request_overtime_superior, :request_overtime_status)
-  end  
+    params.require(:attendance).permit([:scheduled_end_time, :overtime_next_day, :work_description, :request_overtime_superior, :request_overtime_status])[:attendances]
+  end
+  
+  
   # beforeフィルター
   
   
@@ -132,14 +139,14 @@ class AttendancesController < ApplicationController
     unless current_user?(@user) || current_user.admin?
       flash[:danger] = "編集権限がありません。"
       redirect_to(root_url)
-    end
+    end  
   end
   
-  def logged(admin_user)
-  end
-    
   def import
     User.import(params[:file])
     redirect_to root_url
   end
 end
+
+
+
