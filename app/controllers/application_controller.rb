@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
     @user = User.find(params[:id])
   end
 
-  # paramsハッシュからユーザーを取得します。
+  # attendance paramsハッシュからユーザーを取得します。
   def set_user_id
     @user = User.find(params[:user_id])
   end
@@ -47,8 +47,8 @@ class ApplicationController < ActionController::Base
   end
   
   # 管理者は勤怠画面と編集の権限はありません。
-  def no_authority_admin
-    if current_user.admin?
+  def admin_impossibe
+    unless current_user.admin?
       flash[:danger] = "権限がありません。"
       redirect_to root_url
     end

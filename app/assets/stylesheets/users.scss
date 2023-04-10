@@ -52,6 +52,26 @@
   width: 90%;
 }
 
+.name1 {
+  font-size: 17px;
+  font-weight: normal;
+}
+
+/* 検索フォーム */
+
+.col-lg-3 {
+  float: right;
+}
+
+.input-group {
+  width: 250px;
+  display: flex;  /*通常縦並びになる要素ですが、親要素をdisplay:flexを
+                  設定して(フレックスコンテナにして)、子要素を横並びにすることができます。*/
+}
+
+#search {
+  border-radius: 5px;
+}
 /* 基本情報編集 */
 
 .label-basic-info {
@@ -65,9 +85,11 @@
 
 /*基本モーダルウィンドウ*/
 
-.label-basic-info {
-  margin-top:5px;
+.btn-text {
+  margin: 15px 0;
+  width: 30%;
 }
+
 
 /* 勤怠画面 */
 

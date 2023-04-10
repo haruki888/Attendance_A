@@ -91,22 +91,6 @@ p {
 }
 
 
-/* 検索フォーム */
-
-.col-lg-4 {
-  float: right;
-}
-
-.input-group {
-  width: 250px;
-  display: flex;  /*通常縦並びになる要素ですが、親要素をdisplay:flexを
-                  設定して(フレックスコンテナにして)、子要素を横並びにすることができます。*/
-}
-
-#search {
-  border-radius: 5px;
-}
-
 /*勤怠画面*/ 
 
 .wday0 {
@@ -135,4 +119,15 @@ li {
 
 .modal-dialog-center {
   padding-top: 10%;
+}
+
+/* デバッグ */
+.debug_dump {
+  clear: both;
+  float: left;
+  width: 100%;
+  margin-top: 45px;
+  -moz-box-sizing:    border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing:         border-box;
 }

@@ -9,18 +9,14 @@ Rails.application.routes.draw do
   
   resources :users do
     collection {post :import} #:idでurlを識別する必要がない場合はcollectionで設定
-    member do                               #:idがつくURIを生成する
-   
-      get 'export'                           #CSV出力ボタン
-      
+    member do                 #:idがつくURIを生成する
       get 'edit_basic_info'                  #基本情報
       patch 'update_basic_info'              #基本情報登録
       
       get 'attendances/edit_one_month'       #勤怠編集画面
       patch 'attendances/update_one_month'   #勤怠編集画面登録
       
-      get 'attendances/commuting_employee'    #出勤中社員一覧
-      
+      get 'commuting_employee'    #出勤中社員一覧
     end
       resources :attendances, only: :update do
         member do
@@ -42,6 +38,5 @@ Rails.application.routes.draw do
         end
       end
     end
-    
     resources :bases
 end

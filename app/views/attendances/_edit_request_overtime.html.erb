@@ -1,4 +1,4 @@
-<% provide(:title, '残業申請') %>
+<% provide(:class_text, '残業申請') %>
 <% provide(:btn_text, '変更を送信する') %>
 
 <div class="modal-dialog modal-lg modal-dialog-center">
@@ -12,7 +12,7 @@
     <div class="modal-body">
       <div class="row"><!-- 横並びにしたいコンテンツがある時使用 -->
         <div class= "col-md-12">
-         <%= form_with(model: @attendance, url: update_request_overtime_user_attendance_path(@user, @attendance), local: true, method: :patch) do |f| %>
+         <%= form_with(model: @attendance, url: update_request_overtime_user_attendance_path(@user.id), local: true, method: :patch) do |f| %>
            <table class= "table table-bordered">
              <thead>
                <tr>
@@ -27,16 +27,19 @@
                <tbody>
                  <tr>
                    <td><%= l(@attendance.worked_on, format: :short) %></td>
-                   <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
+                   <td class='<%= "wday#{@attendance.worked_on.wday}" %>'><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
                    <td><%= f.time_field :scheduled_end_time, class: 'form-control' %></td>
-                   <td><%= f.check_box:overtime_next_day, id:"next_day" %></td>
+                   <td><%= f.check_box :overtime_next_day, id: "next_day" %></td>
                    <td><%= f.text_field :work_description, class: 'form-control' %></td>
-                   <td><%= f.collection_select(:overtime_request_superior, @superiors, :id, :name, { include_blank: "選択してください" },
+                   <td><%= f.collection_select(:overtime_request_superior, @superiors, :id, :name, {prompt: "選択してください"},
                    :required => true) %></td>
                  </tr>
                </tbody>
            </table>
            <%= f.submit yield(:btn_text), class: "btn btn-block btn-primary" %>
+           <button type="button" class="btn btn-default btn-<%= yield(:class_text) %>" data-dismiss="modal">
+             キャンセル
+           </button>           
          <% end %>
         </div>
      </div>

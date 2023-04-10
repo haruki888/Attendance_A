@@ -1,0 +1,46 @@
+<% provide(:title, "拠点一覧") %>
+
+<div class = "container">  
+  <h1>拠点一覧</h1>
+    <div class= "col-md-10 col-md-offset-1">
+      <table class = "table table-bordered table-condensed table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <th>拠点番号</th>
+            <th>拠点名</th>
+            <th>拠点種類</th>
+          </tr>
+        </thead>
+        
+        <% @bases.each do |base| %>
+          <tbody>
+            <tr>
+              <td><%= link_to "修正", edit_basis_path(base), remote: true, class: "btn btn-primary" %></td>
+              <td><%= link_to "削除", base, method: :delete, data: {confirm: "削除してよろしいですか?" }, class: "btn btn-danger" %></td>
+              <td><%= base.base_number %></td>
+              <td><%= base.base_name %></td>
+              <td><%= base.base_type %></td>
+            </tr>
+          </toboy>
+        <% end %>
+    
+    <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <button data-toggle="collapse" data-target="#collapse" type="button" class = "btn btn-primary btn-lg">拠点情報追加</button>
+          </div>                                        
+        </div>
+        <div id="collapse" class="panel-collapse collapse">
+          <div class="panel-body">
+            <%= render 'form.index' %>
+          </div>
+        </div>
+      </div>
+    </div>      
+</div>
+
+<!--モーダルウィンドウ表示-->
+<div id="edit" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

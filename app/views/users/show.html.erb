@@ -53,7 +53,7 @@
 
 <div class="btn-attendance">
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>&nbsp;&nbsp;
-  <%= link_to "CSV出力", export_user_path(format: :csv), class: "btn btn-primary" %>&nbsp;&nbsp;
+  <%= link_to "CSV出力", import_users_path(format: :csv), class: "btn btn-primary" %>&nbsp;&nbsp;
   <%= link_to "勤怠修正ログ（承認済）", edit_fix_log_user_attendance_path(@user), class: "btn btn-primary" %>
 </div>
 
@@ -91,8 +91,8 @@
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
-          <td><%= link_to "残業申請", edit_request_overtime_user_attendance_path(@user, day), local: true, class: "btn btn-primary" %></td>                                                                       
-          <td><%= l(day.worked_on, format: :short) %></td>              <!--さまざまな処理を並列に行える通信(ajax)に出来る-->
+          <td><%= link_to "残業申請", edit_request_overtime_user_attendance_path(@user, day.id), remote: true, class: "btn btn-primary" %></td><!--remote:true ajax通信で画面遷移することなく、データを保存してページの一部だけ更新することが出来ます。-->
+          <td><%= l(day.worked_on, format: :short) %></td>
           <td class='<%= "wday#{day.worked_on.wday}" %>'><%= $days_of_the_week[day.worked_on.wday] %></td>
           <td width = 100>
             <% if btn_text = attendance_state(day) %>
@@ -161,7 +161,7 @@
       <tr>
         <td></td>
         <td colspan = "2"><%= @attendances.count %></td>
-        <td colspan = "5"><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td>
+         <td colspan = "5"><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td> 
         <td colspan = "2"><%= format("%.2f", @total_working_times.to_f) %></td>
       </tr>
     </tfoot>
@@ -169,7 +169,7 @@
 </div>
 
 <!--モーダルウインドウ表示-->
-<div id= "edit-request-overtime" class= "modal fade" tabindex= "-1" role= "dialog" aria-hidden= "true"></div>
+<div id="edit-request-overtime" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id= "edit-overtime-approval" class= "modal fade" tabindex= "-1" role= "dialog" aria-hidden= "true"></div>
 <div id= "edit-one-month-approval" class= "modal fade" tabindex= "-1" role= "dialog" aria-hidden= "true"></div>
 <div id= "edit-request-change" class= "modal fade" tabindex= "-1" role= "dialog" aria-hidden= "true"></div>

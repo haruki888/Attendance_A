@@ -1,0 +1,25 @@
+<div class= "modal-dialog modal-lg modal-dialog-center">
+  <div class= "modal-content">
+    <div class= "modal-header">
+      <button type= "button" class= "close" data-dismiss= "modal" aria-label= "CLose">
+                                          <!--dasta-dismiss モーダルを閉じる--><!--aria-label 読み上げる-->  
+        <span aria-hidden= "true">×</span><!--aria-hidden 読み上げを外す、true 背景半透明モーダル閉じる-->
+      </button>
+      <h1 class= "modal-title">拠点情報編集</h1>
+    </div>
+    <div class="modal-body">
+      <%= form_with(model: @base, url: basis_path(@base), remote: true, method: :patch) do |f| %>
+      
+        <%= f.label :"拠点番号", class: "label-edit" %>
+        <%= f.number_field :base_number, class: "form-control", in: 1〜20 %>
+        
+        <%= f.label : "拠点名", class: "label-edit" %>
+        <%= f.name_field :base_name, class: "form-control" %>
+        
+        <%= f.label :"拠点種類", class: "label-edit" %>
+        <%= f.select :base_type, {"出勤", "退勤"}, {include_blank: '選択して下さい'}, { class: form-control, required: true} %>
+                                                                                                            <!--入力必須-->
+        <%= f.submit :"更新", class btn btn-primary btn-block %>
+    </div>
+  </div>
+</div>

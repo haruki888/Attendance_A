@@ -1,9 +1,9 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
-  before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
-  before_action :current_user, only: [:edit, :update, :show]
-  before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info]
-  before_action :no_authority_admin, only: :show
+  before_action :set_user, only: %i[show edit update destroy commuting_employee]
+  before_action :logged_in_user, only: %i[index edit update destroy edit_basic_info update_basic_info]
+  before_action :current_user, only: %i[edit update show]
+  before_action :admin_user, only: %i[index destroy edit_basic_info update_basic_info]
+  before_action :admin_impossibe, only: :show
   before_action :set_one_month, only: :show
 
   def index
@@ -11,13 +11,21 @@ class UsersController < ApplicationController
   end
   
   def show
-      @superiors = User.where(superior: true).where.not(id: @user.id)#一般ユーザーでなく上長を取得する。
-      @worked_sum = @attendances.where.not(started_at: nil).count#出勤がない日以外を取得し、合計を出す。
-      @overtime_sum = Attendance.where(request_overtime_superior: @user.name, request_overtime_status: "申請中").count#残業申請を上長に申請している日の合計を出す。
-      @change_sum = Attendance.where(request_change_superior: @user.name, request_change_status: "申請中").count#勤怠変更時間を上長に申請している日の合計を出す。
-      @one_month_sum = Attendance.where(one_month_approval_superior: @user.name, one_month_approval_status: "申請中").count#1ヶ月の勤怠申請している月を取得する
-  end
-  
+    @superiors = User.where(superior: true).where.not(id: @user.id)#一般ユーザーでなく上長を取得する。
+    @worked_sum = @attendances.where.not(started_at: nil).count#出勤がない日以外を取得し、合計を出す。
+    @overtime_sum = Attendance.where(request_overtime_superior: @user.name, request_overtime_status: "申請中").count#残業申請を上長に申請している日の合計を出す。
+    @change_sum = Attendance.where(request_change_superior: @user.name, request_change_status: "申請中").count#勤怠変更時間を上長に申請している日の合計を出す。
+    @one_month_sum = Attendance.where(one_month_approval_superior: @user.name, one_month_approval_status: "申請中").count#1ヶ月の勤怠申請している月を取得する
+    
+    #勤怠ログ出力ボタン
+    respond_to do |format|
+      format.html
+      format.csv do |csv|
+        send_attendances_csv(@attendance)
+      end
+    end
+  end  
+
   def new
     @user = User.new
   end
@@ -55,6 +63,7 @@ class UsersController < ApplicationController
   end
   
   def update_basic_info
+    @user = User.find(params[:id])#アクションの先頭で@userオブジェクトを取得する必要があります。
     if @user.update_attributes(basic_info_params)
       flash[:success] = "#{@user.name}の基本情報は更新しました。"
     else
@@ -63,19 +72,25 @@ class UsersController < ApplicationController
     redirect_to users_url
   end
   
+  #社員一覧名簿入力
   def import
     if params[:file].blank?
       flash[:danger] = "CSVファイルが選択されていません。"
-      rediect_to users_url
+      redirect_to users_url
     else
       if User.import(params[:file])
-        falsh[:success] = "CSVファイルのインポートに成功しました。"
+        flash[:success] = "CSVファイルのインポートに成功しました。"
       else
         flash[:danger] = "CSVファイルのインポートに失敗しました。"
       end
       redirect_to users_url
     end
   end
+
+  def commuting_employee
+    @users = User.all.order(:id)
+  end
+
   
   private #user_paramsメソッドは、Usersコントローラーの内部でのみ実行されます。
           #Web経由で外部のユーザーが知る必要は無いため、次に記すようにRubyのprivateキーワードを用いて
@@ -94,16 +109,34 @@ class UsersController < ApplicationController
                                 :designated_work_start_time, :designaed_work_end_time)
   end
 
-  #def search
+  def search
      #Viewのformで取得したパラメータをモデルに渡す
-    #@users = User.search(params[:search])
-  #end
+    @users = User.search(params[:search])
+  end
   
-  def user_login_required
-    unless logged_in? # ログインしていないとき
-      store_location # ここでURLを一時保存！
-      flash[:danger] = "ログインしてください" # フラッシュメッセージを表示
-      redirect_to login_url # ログインページに強制的に送る
-    end
+  #CSVファイルを出力する
+  def send_attendances_csv(attendance)
+    csv_data = CSV.generate do |csv|
+      header = %w(日付 出勤時間 退勤時間)
+      csv << header
+      attendances.each do |day|
+        values = [
+           l(day.worked_on, format: :default),
+           if day.started_at.present? && (request_change_status == "承認").present?
+             l(day.started_at, :Time.current.floor_to(15.minutes))
+           else
+             nil
+           end,
+           if day.finished_at.present? && (request_change_status == "承認").present?
+             l(day.finished_at, :Time.current.floor_to(15.minutes))
+           else
+             nil
+           end
+          ]
+        #表の行に入る値を定義
+        csv << values
+      end
+     end
+     send_data(csv_data, filename: "勤怠一覧.csv")
   end
 end

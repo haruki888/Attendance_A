@@ -4,6 +4,8 @@ class CreateBases < ActiveRecord::Migration[5.1]
       t.integer :base_number
       t.string :base_name
       t.string :base_type
+      
+      t.timestamps
     end
   end
 end
