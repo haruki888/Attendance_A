@@ -16,8 +16,6 @@ ActiveRecord::Schema.define(version: 20230131123847) do
     t.date "worked_on"
     t.datetime "started_at"
     t.datetime "finished_at"
-    t.datetime "work_start_time"
-    t.datetime "work_end_time"
     t.string "note"
     t.integer "user_id"
     t.datetime "created_at", null: false
@@ -59,13 +57,13 @@ ActiveRecord::Schema.define(version: 20230131123847) do
     t.string "password_digest"
     t.string "remember_digest"
     t.boolean "admin", default: false
-    t.datetime "basic_work_time", default: "2023-04-01 23:00:00"
-    t.datetime "work_time", default: "2023-04-01 22:30:00"
+    t.datetime "basic_work_time", default: "2023-05-05 23:00:00"
+    t.datetime "work_time", default: "2023-05-05 22:30:00"
     t.boolean "superior", default: false
     t.integer "employee_number", default: 0
     t.string "uid"
-    t.datetime "designated_work_start_time", default: "2023-04-01 23:30:00"
-    t.datetime "designated_work_end_time", default: "2023-04-02 08:30:00"
+    t.datetime "designated_work_start_time", default: "2023-05-05 23:30:00"
+    t.datetime "designated_work_end_time", default: "2023-05-06 08:30:00"
     t.string "affiliation"
     t.index ["email"], name: "index_users_on_email", unique: true
   end

@@ -27,23 +27,24 @@
 </div>
 
 <div class = "superior-link">
-  <% if @user.superior && current_user %>
+  <% if @user.superior? %>
     <% if @one_month_sum > 0 %>
-      <%= link_to "【所属長承認申請のお知らせ】", edit_one_month_approval_user_attendance_path(@user), remote: true, class: "superior__btn" %><sapn style= "border: sold 2px red; color: red;"> 
-      <%= link_to "#{@one_month_sum}件の通知があります" %><br><!----Ajaxを簡単に実装する。サーバー側との通信を「非同期」で行い、通信結果によって「動的にページの一部だけ書き換える手法のこと」です。-->
+      <%= link_to "【所属長承認申請のお知らせ】", edit_one_month_approval_user_attendance_path(@user), remote: true, class:"superior-btn" %>
+      <span style= "border: sold 2px red; color: red;"> 
+      <%= link_to "#{@one_month_sum}件の通知があります", edit_one_month_approval_user_attendance_path(@user), remote: true, class: "superior-btn" %></span><br>
     <% else %>
       <%= "【所属長承認申請のお知らせ】" %><br>
     <% end %>
     <% if @change_sum > 0 %>
-      <%= link_to "【勤怠変更申請のお知らせ】", edit_request_change_user_attendance_path(@user), remote: true, class:"superior__btn" %>
-      <sapn style= "border: solid 2px red; color: red;">
-      <%= link_to "#{@change_sum}件の通知があります", edit_request_change_user_attendance_path(@user), remote: true, class:"btn-superior" %></sapn><br>
+      <%= link_to "【勤怠変更申請のお知らせ】", edit_request_change_user_attendance_path(@user), remote: true, class: "superior-btn" %>
+      <span style= "border: solid 2px red; color: red;">
+      <%= link_to "#{@change_sum}件の通知があります", edit_request_change_user_attendance_path(@user), remote: true, class:"superior-btn" %></span><br>
     <% else %>
       <%= "【勤怠変更申請のお知らせ】" %><br>
     <% end %>
     <% if @overtime_sum > 0 %>
-      <%= link_to "【残業申請のお知らせ】", edit_request_overtime_user_attendance_path(@user), remote: true, class: "superior__btn" %>
-      <sapn style= "border: sold 2px red; color: red;">
+      <%= link_to "【残業申請のお知らせ】", edit_request_overtime_user_attendance_path(@user), remote: true, class: "superior-btn" %>
+      <span style= "border: sold 2px red; color: red;">
       <%= link_to "#{@overtime_sum}件の通知があります。", edit_overtime_approval_user_attendance_path(@user), remote: true, class: "superior_btn" %></span><br>
     <% else %>
         <%= "【残業申請のお知らせ】" %><br>
@@ -99,20 +100,19 @@
               <%= link_to "#{btn_text}登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
             <% end %>
           </td>
-          <td><%= l(day.started_at, format: :hour) if day.started_at? %></td>
-          <td><%= l(day.started_at, format: :minute) if day.started_at? %></td><!--minuteをja.yml/ formats:にminute: "%M"を追加で解決-->
-          <td><%= l(day.finished_at, format: :hour) if day.finished_at? %></td>
-          <td><%= l(day.finished_at, format: :minute) if day.finished_at? %></td>
-          
+          <td><%= l(day.started_at, format: :hour) if day.started_at.present? %></td>
+          <td><%= l(day.started_at, format: :minute) if day.started_at.present? %></td><!--minuteをja.yml/ formats:にminute: "%M"を追加-->
+          <td><%= l(day.finished_at, format: :hour) if day.finished_at.present? %></td>
+          <td><%= l(day.finished_at, format: :minute) if day.finished_at.present? %></td>
           <td>
-            <% if day.started_at.present? && day.finished_at? %>
+            <% if day.started_at.present? && day.finished_at.present? %>
               <%= str_times = working_times(day.started_at, day.finished_at) %>
               <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
             <% end %>
           </td>
           <td><%= day.note %></td>
-          <td><%= l(day.scheduled_end_time, format: :hour) if day.scheduled_end_time? %></td>
-          <td><%= l(day.scheduled_end_time, format: :minute) if day.scheduled_end_time? %></td>
+          <td><%= l(day.scheduled_end_time, format: :hour) if day.scheduled_end_time.present? %></td>
+          <td><%= l(day.scheduled_end_time, format: :minute) if day.scheduled_end_time.present? %></td>
           <td>
             <% if day.scheduled_end_time.present? %><!--時間外時間を計算-->
               <%= working_overtimes(@user.desingnated_worked_end_time, day.next_day) %>
@@ -122,15 +122,13 @@
           <td>
             <% if day.request_overtime_status == "申請中" %>
               <%= "#{day.request_overtime_superior}へ残業#{day.request_overtime_status}" %>
-            <% elsif %>
-              <% day.request_overtime_status == "承認" || day.request_overtime_status == "否認" %>
-                <%= "#{day.request_overtime_superior}より残業#{day.request_overtime_status}" %>      
+            <% elsif day.request_overtime_status == "承認" || day.request_overtime_status == "否認" %>
+              <%= "#{day.request_overtime_superior}からの残業#{day.request_overtime_status}" %>
             <% end %>
             <% if day.request_change_status == "申請中" %>
               <%= "#{day.request_change_superior}へ勤怠変更#{day.request_change_status}" %>
-            <% elsif %>
-              <% day.request_change_status == "承認" || day.request_change_status == "否認" %>
-                <%= "#{day.request_change_superior}より勤怠変更#{day.request_change_status}" %>
+            <% elsif day.request_change_status == "承認" || day.request_change_status == "否認" %>
+              <%= "#{day.request_change_superior}より勤怠変更#{day.request_change_status}" %>
             <% end %>
           </td>  
         </tr>

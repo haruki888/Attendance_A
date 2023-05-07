@@ -6,16 +6,22 @@ class ApplicationController < ActionController::Base
           #↑
   #グローバル変数
   #リテラル表記 #["日", "月", "火", "水", "木", "金", "土"]の配列と同じように使えます
-  # beforフィルター
   
+
+# beforフィルター  
   # paramsハッシュからユーザーを取得します。
   def set_user
     @user = User.find(params[:id])
   end
 
-  # attendance paramsハッシュからユーザーを取得します。
+  # paramsハッシュからユーザーの情報を取得します。
   def set_user_id
     @user = User.find(params[:user_id])
+  end
+  
+  #paramsハッシュからユーザーの勤怠を取得します。
+  def set_attendance_id
+    @attendance = Attendance.find(params[:id])
   end
   
   # ログイン済みのユーザーか確認します。
@@ -47,8 +53,8 @@ class ApplicationController < ActionController::Base
   end
   
   # 管理者は勤怠画面と編集の権限はありません。
-  def admin_impossibe
-    unless current_user.admin?
+  def admin_limit
+    if current_user.admin?
       flash[:danger] = "権限がありません。"
       redirect_to root_url
     end

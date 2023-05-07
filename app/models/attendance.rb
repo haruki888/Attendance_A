@@ -28,6 +28,7 @@ class Attendance < ApplicationRecord
     end
   end
   
+  #勤怠一覧出力
   def self.to_csv
     attributes = %w[date started_at finished_at ]
 

@@ -14,7 +14,6 @@
           <th>在社時間</th>
           <th>備考</th>
           <th>指示者確認㊞</th>
-          
         </tr>
       </thead>
       <tbody>
@@ -26,20 +25,25 @@
             <% if Date.current < day.worked_on %>
               <td><%= attendance.time_field :started_at, readonly: true, class: "form-control" %></td>
               <td><%= attendance.time_field :finished_at, readonly: true, class: "form-control" %></td>
+              <!--readonly: true フィールドを読み取り専用にし編集できないようにする-->
             <% else %>
-              <td><%= attendance.time_field :started_at, class: "form-control" %></td>
-              <td><%= attendance.time_field :finished_at, class: "form-control" %></td>
+              <td>
+                <% day.after_started_at = day.started_at %>
+                <%= attendance.time_field :after_started_at, class: "form-control" %>
+              </td>
+              <td>
+                <% day.after_finished_at = day.finished_at %>
+                <%= attendance.time_field :after_finished_at, class: "form-control" %>
+              </td>
             <% end %>
-            <td><%= f.check_box:remember_me,id:"remember-me" %></td>
+            <td><%= f.check_box :next_day %></td>
             <td>
               <% if day.started_at.present? && day.finished_at.present? %>
                 <%= working_times(day.started_at, day.finished_at) %>
               <% end %>  
             </td>
             <td><%= attendance.text_field :note, class: "form-control" %></td>
-            <td><%= attendance.collection_select(:request_change_superior, @superiors, :id, :name,
-                                                { include_blank: true, selected: nil }) %>
-            </td>                                    <!--空白-->        <!--初期値-->
+            <td><%= attendance.collection_select:request_change_superior, @superiors, :name, :name, { include_blank: true} %></td>
           </tr>
         <% end %>
       <% end %>
@@ -49,7 +53,7 @@
   
   <div class = "center">
     <%= link_to "キャンセル", user_path(date: @first_day), class: "btn btn-lg btn-default" %>
-    <%= f.submit "編集を保存する", class: "btn btn-lg btn-primary" %><!-- HTTPから判断して特にアクション先を指定せずとも
+    <%= f.submit "編集を保存する", class:"btn btn-lg btn-primary" %><!-- HTTPから判断して特にアクション先を指定せずとも
                                                                           ボタンを押せばupdateやcreateメソッドに飛ぶよう
                                                                           になる -->
   </div>

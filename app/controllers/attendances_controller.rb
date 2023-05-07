@@ -1,73 +1,70 @@
 class AttendancesController < ApplicationController
   
   include AttendancesHelper
-  before_action :set_user, only: %i[edit_one_month update_one_month update_request_overtime]
-  before_action :set_user_id, only: %i[update edit_request_overtime update_request_overtime edit_overtime_approval update_overtime_approval edit_one_month_approval update_one_month_approval edit_request_changeupdate_request_change]
-  before_action :logged_in_user, only: %i[:update, :edit_one_month]
-  before_action :admin_or_correct_user, only: %i[:update, :edit_one_month, :update_one_month]
-  before_action :no_authority_admin, only: :edit_one_month
+  before_action :set_user, only: %i[edit_one_month update_one_month]
+  before_action :set_user_id, only: %i[update]
+  before_action :set_attendance_id, only: %i[update edit_request_overtime update_request_overtime]
+  before_action :logged_in_user, only: %i[update edit_one_month]
+  before_action :admin_or_correct_user, only: %i[update edit_one_month update_one_month]
+  before_action :admin_limit, only: :edit_one_month
   before_action :set_one_month, only: :edit_one_month
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直して下さい。"
    
     
-  # 出退勤ボタンの勤務登録
   def update
-    @user = User.find(params[:user_id])
-    @attendance = Attendance.find(params[:id])#更新対象となるデータを取得する
     # 出勤時間が未登録であることを判定します。
-    if @attendance.started_at.nil?
-      if @attendance.update_attributes(started_at: Time.current.floor_to(15.minutes))#15分単位で丸める
-        flash[:info] = "おはようございます！"
-      else
-        flash[:danger] = UPDATE_ERROR_MSG
+      if @attendance.started_at.nil?
+        if @attendance.update_attributes(started_at: Time.current.floor_to(15.minutes))
+          flash[:info] = "おはようございます！"
+        else
+          flash[:danger] = UPDATE_ERROR_MSG
+        end
+      elsif @attendance.finished_at.nil?
+        if @attendance.update_attributes(finished_at: Time.current.floor_to(15.minutes))
+          flash[:info] = "お疲れ様でした。"
+        else
+          flash[:danger] = UPDATE_ERROR_MSG
+        end
       end
-    elsif @attendance.finished_at.nil?
-      if @attendance.update_attributes(finished_at: Time.current.floor_to(15.minutes))#15分単位で丸める 
-        flash[:info] = "お疲れ様でした。"
-      else
-        flash[:danger] = UPDATE_ERROR_MSG
-      end
-    end
-    redirect_to @user
+      redirect_to @user
   end
   
-  # 勤怠変更申請
   def edit_one_month
     @superiors = User.where(superior: true).where.not(id: @user.id)
   end
   
   # 勤怠変更承認
   def update_one_month
-    count_number = 0
+    request_count = 0
     ActiveRecord::Base.transaction do
       attendances_params.each do |id, item|
-        if item[:request_change_superior].present? && item[:note].present?
-          if item[:started_at].present? && item[:finished_at].present?
-            flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
-            redirect_to user_url(date: params[:date]) and return
-          else
-            flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
-            redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
-          end
+       if item[:request_change_superior].present?
+        if item[:after_started_at].blank? && item[:after_finished_at].present?
+          flash[:danger] = "出勤時間を入力して下さい。"
+          redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+        elsif item[:after_started_at].present? && item[:after_finished_at].blank?
+          flash[:danger] = "退勤時間を入力して下さい。"
+          redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+        end
+        #redirect_toは1回指定したアクションを実行して、そのアクションに対応したビューを表示
+        #returnには「指定した式の値を返り値として返す」と「メソッドの処理を終了させる」という2つの機能がある
+        #renderはアクションを実行せずにビューファイルを表示 
           attendance = Attendance.find(id)
-          count_number += 1
-          attendance.attendance_request_change_status = "申請中"
+          attendance.request_change_status = "申請中"
+          request_count += 1
           attendance.update_attributes!(item)#update_attributes  → falseを返す
         end                                  #update_attributes! → 例外(validation)を投げる
-      end                                       
-      if count_number > 0
-        flash[:success] = "勤怠変更を#{count_number}件申請しました。"
-        redirect_to user_url(date: params[:date]) and return
-      else
-        flash[:info] = "勤怠編集はありません。"
+      end
+      if request_count > 0
+        flash[:success] = "勤怠変更を#{request_count}件申請しました。"
         redirect_to user_url(date: params[:date]) and return
       end
-  end
     rescue ActiveRecord::RecordInvalid
-      flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+      flash[:danger] = "勤怠情報に不備があります。再度確認してください。"
       redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
     end
+  end
 
   #残業申請モーダル
   def edit_request_overtime
@@ -99,6 +96,7 @@ class AttendancesController < ApplicationController
   def edit_overtime_approval
     @attendances = Attendance.where(one_month_request_superior: @user.name, one_month_request_status: "申請中").order(:worked_on).group_by(&:user_id)
   end
+  
   # 勤怠ログ
   def edit_log
     if params[:worked_on].present?
@@ -118,9 +116,11 @@ class AttendancesController < ApplicationController
   
   private
   
-  # 1ヶ月分の勤怠情報を扱います。
+  
+  
+  # 1ヶ月分の勤怠情報を扱います
   def attendances_params
-    params.require(:user).permit(attendances: [:started_at, :finished_at, :before_started_at, :before_finished_at, :note])[:attendances]
+    params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :next_day, :request_change_superior, :request_change_status])[:attendances]
   end
   
   #残業申請
@@ -128,19 +128,7 @@ class AttendancesController < ApplicationController
     params.require(:attendance).permit([:worked_on, :scheduled_end_time, :overtime_next_day, :work_description, :request_overtime_superior, :request_overtime_status])[:attendances]
   end
   
-  
-  # beforeフィルター
-  
-  
-  # 管理権限者、または現在ログインしているユーザーを許可します。
-  def admin_or_correct_user
-    @user = User.find(params[:user_id]) if @user.blank?
-    unless current_user?(@user) || current_user.admin?
-      flash[:danger] = "編集権限がありません。"
-      redirect_to(root_url)
-    end
-  end
-  
+ 
   def import
     User.import(params[:file])
     redirect_to root_url
