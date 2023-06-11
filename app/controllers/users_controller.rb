@@ -1,15 +1,15 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: %i[show edit update destroy commuting_employee]
+  before_action :set_user, only: %i[show edit update destroy commuting_employee show_verify]
   before_action :logged_in_user, only: %i[index edit update destroy edit_basic_info update_basic_info]
   before_action :current_user, only: %i[edit update show]
   before_action :admin_user, only: %i[index destroy edit_basic_info update_basic_info]
   before_action :admin_limit, only: :show
-  before_action :set_one_month, only: :show
+  before_action :set_one_month, only: %i[show show_verify]
 
   def index
     @users = User.paginate(page: params[:page])
   end
-  
+ 
   def show
     @superiors = User.where(superior: true).where.not(id: @user.id)#一般ユーザーでなく上長を取得する。
     @worked_sum = @attendances.where.not(started_at: nil).count#出勤がない日以外を取得し、合計を出す。
@@ -24,6 +24,13 @@ class UsersController < ApplicationController
         send_attendances_csv(@attendance)
       end
     end
+  end  
+
+  def show_verify
+    @worked_sum = @attendances.where.not(started_at: nil).count
+    @overtime_sum = Attendance.where(request_overtime_superior: @user.name, request_overtime_status: "申請中").count
+    @change_sum = Attendance.where(request_change_superior: @user.name, request_change_status: "申請中").count
+    @one_month_sum = Attendance.where(one_month_approval_superior: @user.name, one_month_approval_status: "申請中").count
   end  
 
   def new
@@ -91,6 +98,11 @@ class UsersController < ApplicationController
     @users = User.all.order(:id)
   end
 
+  def search
+     #Viewのformで取得したパラメータをモデルに渡す
+    @users = User.search(params[:search])
+  end
+
   
   private #user_paramsメソッドは、Usersコントローラーの内部でのみ実行されます。
           #Web経由で外部のユーザーが知る必要は無いため、次に記すようにRubyのprivateキーワードを用いて
@@ -109,11 +121,7 @@ class UsersController < ApplicationController
                                 :designated_work_start_time, :designaed_work_end_time)
   end
 
-  def search
-     #Viewのformで取得したパラメータをモデルに渡す
-    @users = User.search(params[:search])
-  end
-  
+
   #CSVファイルを出力する
   def send_attendances_csv(attendance)
     csv_data = CSV.generate do |csv|

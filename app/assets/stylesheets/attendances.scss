@@ -2,9 +2,9 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-/* ユーザー勤怠情報テーブル */
+/* 勤怠情報テーブル */
 
-#table-attendances {
+#table-attendances, #table {
   th {
     vertical-align: middle;
     text-align: center;
@@ -14,7 +14,7 @@
     text-align: center;
   }
 }
-
+  
 .supeior-notice {
   color: red;
 }
@@ -27,7 +27,27 @@
   margin-bottom: 4px;
 }
 
-/*　残業申請モーダルウィンドウ　*/
+
+
+/*基本モーダルウィンドウ*/
+
+.btn-text {
+  margin: 15px 0;
+  width: 30%;
+}
+
+#table th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+/* 勤怠画面 */
+
+.btn-superior {
+  color: red;
+}
+
 
 /* 申請情報の通知お知らせ　*/
 .superior__btn {

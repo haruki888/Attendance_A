@@ -26,4 +26,3 @@ class AddColumnsToAttendances < ActiveRecord::Migration[5.1]
     add_column :attendances, :work_description, :string                               #業務処理内容
   end
 end
-ˇ
