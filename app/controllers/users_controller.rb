@@ -1,4 +1,7 @@
 class UsersController < ApplicationController
+ 
+  include UsersHelper
+  
   before_action :set_user, only: %i[show edit update destroy commuting_employee show_verify]
   before_action :logged_in_user, only: %i[index edit update destroy edit_basic_info update_basic_info]
   before_action :current_user, only: %i[edit update show]

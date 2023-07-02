@@ -21,7 +21,7 @@ class AddColumnsToAttendances < ActiveRecord::Migration[5.1]
     add_column :attendances, :request_overtime_superior, :string                      #残業申請
     add_column :attendances, :request_overtime_status, :string                        #残業申請状態
     add_column :attendances, :next_day, :boolean, default: false                      #次の日
-    add_column :attendances, :overtime_next_day, :boolean, default: false, null: false#残業時間次の日
+    add_column :attendances, :overtime_next_day, :boolean, default: false             #残業時間次の日
     add_column :attendances, :overtime_check, :boolean, default: false                #残業確認チェック
     add_column :attendances, :work_description, :string                               #業務処理内容
   end

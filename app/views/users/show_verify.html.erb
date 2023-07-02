@@ -66,16 +66,16 @@
           <td><%= l(day.finished_at, format: :minute) if day.finished_at.present? %></td>
           <td>
             <% if day.started_at.present? && day.finished_at.present? %>
-              <%= str_times = working_times(day.started_at, day.finished_at) %>
-              <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
+              <%= working_times(day.started_at, day.finished_at, day.next_day) %>
+              <% @total_working_times = @total_working_times.to_f + working_times(day.started_at, day.finished_at, day.next_day).to_f %>
             <% end %>
           </td>
           <td><%= day.note %></td>
           <td><%= day.scheduled_end_time.strftime("%H") if day.scheduled_end_time.present? %></td>
           <td><%= day.scheduled_end_time.strftime("%M") if day.scheduled_end_time.present? %></td>
           <td>
-            <% if day.scheduled_end_time.present? %><!--時間外時間を計算-->
-              <%= working_overtimes(@user.desingnated_worked_end_time, day.next_day) %>
+            <% if day.scheduled_end_time.present? %>
+              <%= working_overtimes(day.started_at, day.finished_at, day.next_day) %>
             <% end %>
           </td>
           <td><%= day.work_description %></td>
@@ -94,36 +94,7 @@
         </tr>
       <% end %>
     </tbody>
-    
-    <tfoot>
-      <!--rowspan:縦結合、colspan:横結合-->
-      <tr>
-        <td></td>
-        <td colspan = "2">累計日数</td>
-        <td colspan = "5">総合勤務時間</td>
-        <td colspan = "2">累計在社時間</td>
-        <td colspan = "3" rowspan = "2"></td>
-        <td colspan = "2" rowspan = "2">
-          <label>所属長承認 未</label><br>
-            <select class="d-grid gap-2 col-3 mx-auto">
-              <button type="button" class= "btn btn-outline-dark btn-block" id= "select">Dark<span "caret"></span>
-                <option >選択して下さい</option>
-                <option ><%= link_to "上長A", "#" %></option>
-                <option ><%= link_to "上長B", "#" %></option>
-              </button>
-            </select>
-            
-          <button type="button" class="btn btn-primary btn-block">申請</button>
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td colspan = "2"><%= @attendances.count %></td>
-         <td colspan = "5"><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td> 
-        <td colspan = "2"><%= format("%.2f", @total_working_times.to_f) %></td>
-      </tr>
-    </tfoot>
-  </table>
+ </table>
 </div>
 
 <!--モーダルウインドウ表示-->
