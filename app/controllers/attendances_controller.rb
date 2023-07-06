@@ -106,7 +106,6 @@ class AttendancesController < ApplicationController
             item[:started_at] == nil if item[:started_at].present?
             item[:finished_at] == nil if item[:finished_at].present?
             item[:note] == nil
-
           elsif item[:request_change_status] == 'なし'
             attendance.after_started_at == nil if attendance.after_started_at.present?
             attendance.after_finished_at == nil if attendance.after_finished_at.present?
@@ -132,26 +131,29 @@ class AttendancesController < ApplicationController
   
   #残業申請モーダル
   def edit_request_overtime
+    @user = User.find(params[:user_id])
     @superiors = User.where(superior: true).where.not(id: @user.id)
-    @attendances = Attendance.where(request_overtime_superior: @user.name, request_overtime_status: "申請中").order(:worked_on).group_by(&:user_id)
+    @attendance = Attendance.find(params[:id])
+    #@attendances = Attendance.where(request_overtime_superior: @user.name, request_overtime_status: "申請中").order(:worked_on).group_by(&:user_id)
   end
   
   
-  #残業申請更新モーダル
+  #残業申請モーダル
   def update_request_overtime
-    if request_overtime_params[:request_overtime_superior].blank? || request_overtime_params[:scheduled_end_time].blank? || request_overtime_params[:work_description].blank?
-      flash[:danger] = "未入力欄があります。"
-      redirect_to edit_request_overtime_user_attendance_url(@user) and return
-    elsif request_overtime_params[:scheduled_end_time].present? && request_overtime_params[:overtime_next_day].blank?
-      flash[:danger] = "翌日の欄が未入力です。"
-      redirect_to edit_request_overtime_user_attendance_url(@user) and return
-    end
-    if @attendance.update(request_overtime_params)
-      flash[:success] = "#{@user.name}さんの残業を申請しました。"
-    else
-      flash[:danger] = "残業の申請に不備があります。再度確認してください。"
-    end
-    redirect_to @user
+   #debugger
+    @user = User.find(params[:user_id])
+    @attendance = Attendance.find(params[:id])
+      # if request_overtime_params[:request_overtime_superior].blank? || request_overtime_params[:scheduled_end_time].blank? || request_overtime_params[:work_description].blank? || request_overtime_params[:overtime_next_day].blank?
+      #   flash[:danger] = "未入力欄があります。"
+      #   redirect_to user_url(@user) and return
+      # end
+      if @attendance.update(request_overtime_params)
+        #params[:attendance][:request_overtime_status] = "申請中"
+        flash[:success] = "#{@user.name}さんの残業を申請しました。"
+      else
+        flash[:danger] = "残業の申請に不備があります。再度確認してください。"
+      end
+      redirect_to user_url(@user) and return
   end 
    
      
@@ -215,7 +217,7 @@ class AttendancesController < ApplicationController
   
   #残業申請
   def request_overtime_params
-    params.require(:attendance).permit(:scheduled_end_time, :overtime_next_day, :work_description, :request_overtime_superior)
+    params.require(:attendance).permit(:scheduled_end_time, :overtime_next_day, :work_description, :request_overtime_superior, :request_overtime_status)
   end
   
   #残業申請承認

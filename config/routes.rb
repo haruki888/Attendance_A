@@ -22,7 +22,10 @@ Rails.application.routes.draw do
     end
       resources :attendances, only: :update do
         member do
-          get 'edit_request_overtime'      #残業申請
+          get 'edit_request_change'        #勤怠変更申請モーダル
+          patch 'update_request_change'    #勤怠変更申請登録
+         
+          get 'edit_request_overtime'      #残業申請モーダル
           patch 'update_request_overtime'  #残業申請登録
           
           get 'edit_overtime_approval'     #残業承認
@@ -30,9 +33,6 @@ Rails.application.routes.draw do
           
           get 'edit_one_month_approval'    #1ヶ月の勤怠承認
           patch 'update_one_month_approval'#1ヶ月の勤怠承認登録
-          
-          get 'edit_request_change'        #勤怠変更申請モーダル
-          patch 'update_request_change'    #勤怠変更申請登録
           
           get 'edit_fix_log'               #勤怠修正ログ (承認済)
          

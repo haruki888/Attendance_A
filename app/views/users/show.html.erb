@@ -42,6 +42,7 @@
     <% else %>
       <%= "【勤怠変更申請のお知らせ】" %><br>
     <% end %>
+    
     <% if @overtime_sum > 0 %>
       <%= link_to "【残業申請のお知らせ】", edit_overtime_approval_user_attendance_path(@user), remote: true, class: "btn-superior" %>
       <span style= "border: sold 2px red; color: red;">
