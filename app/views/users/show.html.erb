@@ -45,7 +45,7 @@
     
     <% if @overtime_sum > 0 %>
       <%= link_to "【残業申請のお知らせ】", edit_overtime_approval_user_attendance_path(@user), remote: true, class: "btn-superior" %>
-      <span style= "border: sold 2px red; color: red;">
+      <span style= "border: solid 2px red; color: red;">
       <%= link_to "#{@overtime_sum}件の通知があります。", edit_overtime_approval_user_attendance_path(@user), remote: true, class: "btn-superior" %></span><br>
     <% else %>
         <%= "【残業申請のお知らせ】" %><br>
@@ -63,20 +63,20 @@
   <table class = "table table-bordered table-condensed table-striped" id = "table">
     <thead>
       <tr>
-        <th rowspan = "3", width = 50>残業申請</th>
-        <th rowspan = "3", width = 20>日付</th>
+        <th rowspan = "3">残業申請</th>
+        <th rowspan = "3">日付</th>
         <th rowspan = "3">曜日</th>
-        <th colspan = "7", width = 100>【実績】</th>
-        <th colspan = "6", width = 100>所定外勤務</th>
+        <th colspan = "7">【実績】</th>
+        <th colspan = "6">所定外勤務</th>
       </tr>
       <tr>
-        <th rowspan = "2", width = 20></th>
+        <th rowspan = "2"></th>
         <th colspan = "2">出社</th>
         <th colspan = "2">退社</th>
-        <th rowspan = "2", width = 50>在社時間</th>
-        <th rowspan = "2", width = 100>備考</th>
-        <th colspan = "2", width = 10>終了予定時間</th>
-        <th rowspan = "2", width = 50>時間外時間</th>
+        <th rowspan = "2">在社時間</th>
+        <th rowspan = "2">備考</th>
+        <th colspan = "2">終了予定時間</th>
+        <th rowspan = "2">時間外時間</th>
         <th rowspan = "2">業務処理内容</th>
         <th rowspan = "2">指示者確認㊞</th>
       </tr>
@@ -101,7 +101,7 @@
               <%= link_to "#{btn_text}登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
             <% end %>
           </td>
-          <td><%= l(day.started_at, format: :hour)  if day.started_at.present? %></td>
+          <td><%= l(day.started_at, format: :hour) if day.started_at.present? %></td>
           <td><%= l(day.started_at, format: :minute) if day.started_at.present? %></td><!--minuteをja.yml/ formats:にminute: "%M"を追加-->
           <td><%= l(day.finished_at, format: :hour) if day.finished_at.present? %></td>
           <td><%= l(day.finished_at, format: :minute) if day.finished_at.present? %></td>
@@ -122,18 +122,18 @@
           <td><%= day.work_description %></td>
           <td>
             <% if day.request_overtime_status == "申請中" %>
-              <%= "#{day.request_overtime_superior}へ残業#{day.request_overtime_status}" %>
+              <%= "#{day.request_overtime_superior}へ残業#{day.request_overtime_status}" %><br>
             <% elsif day.request_overtime_status == "承認" || day.request_overtime_status == "否認" %>
-              <%= "#{day.request_overtime_superior}からの残業#{day.request_overtime_status}" %>
+              <%= "#{day.request_overtime_superior}からの残業#{day.request_overtime_status}" %><br>
             <% elsif day.request_overtime_status == "なし" %>
-              <%= "#{day.request_overtime_superior}からの承認なし" %>
+              <%= "#{day.request_overtime_superior}からの承認なし" %><br>
             <% end %>
             <% if day.request_change_status == "申請中" %>
-              <%= "#{day.request_change_superior}へ勤怠変更#{day.request_change_status}" %>
+              <%= "#{day.request_change_superior}へ勤怠変更#{day.request_change_status}" %><br>
             <% elsif day.request_change_status == "承認" || day.request_change_status == "否認" %>
-              <%= "#{day.request_change_superior}より勤怠変更#{day.request_change_status}" %>
+              <%= "#{day.request_change_superior}より勤怠変更#{day.request_change_status}" %><br>
             <% elsif day.request_change_status == "なし" %>
-              <%= "#{day.request_change_superior}より勤怠変更承認なし" %>
+              <%= "#{day.request_change_superior}より勤怠変更承認なし" %><br>
             <% end %>
           </td>  
         </tr>
