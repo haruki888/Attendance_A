@@ -126,7 +126,7 @@
             <% elsif day.request_overtime_status == "承認" || day.request_overtime_status == "否認" %>
               <%= "#{day.request_overtime_superior}からの残業#{day.request_overtime_status}" %><br>
             <% elsif day.request_overtime_status == "なし" %>
-              <%= "#{day.request_overtime_superior}からの承認なし" %><br>
+              <%= "#{day.request_overtime_superior}からの残業承認なし" %><br>
             <% end %>
             <% if day.request_change_status == "申請中" %>
               <%= "#{day.request_change_superior}へ勤怠変更#{day.request_change_status}" %><br>

@@ -3,12 +3,12 @@ class AttendancesController < ApplicationController
   include UsersHelper
   
   before_action :set_user, only: %i[edit_one_month update_one_month edit_request_change update_request_change]
-  before_action :set_user_id, only: %i[update edit_request_change update_request_change edit_request_overtime update_request_overtime edit_overtime_approval update_overtime_approval]
+  before_action :set_user_id, only: %i[update edit_request_change update_request_change edit_request_overtime update_request_overtime edit_overtime_approval update_overtime_approval edit_fix_log]
   before_action :set_attendance_id, only: %i[update edit_request_overtime update_request_overtime]
   before_action :logged_in_user, only: %i[update edit_one_month]
   before_action :admin_or_correct_user, only: %i[update edit_one_month update_one_month]
-  before_action :admin_limit, only: :edit_one_month
-  before_action :set_one_month, only: :edit_one_month
+  before_action :admin_limit, only: %i[edit_one_month]
+  before_action :set_one_month, only: %i[edit_one_month edit_fix_log]
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直して下さい。"
   
@@ -89,6 +89,8 @@ class AttendancesController < ApplicationController
       attendance = Attendance.find(id)
       if item[:change_check] == 1    
         if item[:request_change_status] == "承認"
+          attendance.before_started_at = attendance.started_at      #変更後出勤時間
+          attendance.before_finished_at = attendance.finished_at    #変更後退勤時間
           item[:started_at] = attendance.after_started_at           #変更後出勤時間
           item[:finished_at] = attendance.after_finished_at         #変更後退勤時間
 
@@ -123,7 +125,6 @@ class AttendancesController < ApplicationController
   #残業申請モーダル
   def edit_request_overtime
     @superiors = User.where(superior: true).where.not(id: @user.id)
-    @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     @attendances = Attendance.where(request_overtime_superior: @user.name, request_overtime_status: "申請中").order(:worked_on).group_by(&:user_id)
   end
@@ -131,8 +132,6 @@ class AttendancesController < ApplicationController
   
   #残業申請モーダル
   def update_request_overtime
-   #debugger
-      @user = User.find(params[:user_id])
       @attendance = Attendance.find(params[:id])
       if request_overtime_params[:request_overtime_superior].blank? || request_overtime_params[:scheduled_end_time].blank? || request_overtime_params[:work_description].blank? || request_overtime_params[:overtime_next_day].blank?
         flash[:danger] = "未入力欄があります。"
@@ -150,7 +149,6 @@ class AttendancesController < ApplicationController
      
   #残業申請通知モーダル
   def edit_overtime_approval
-   #debugger
     @user = User.find(params[:id])
     @attendance = Attendance.find(params[:id])
     @attendances = Attendance.where(request_overtime_superior: @user.name, request_overtime_status: "申請中").order(:worked_on).group_by(&:user_id)
@@ -159,7 +157,6 @@ class AttendancesController < ApplicationController
   #残業申請通知承認モーダル更新
   def update_overtime_approval
     overtime_approval_params.each do |id, item|
-     #debugger
       attendance = Attendance.find(id)
         if item[:overtime_check] == 1
           if item[:request_overtime_status] == "承認"
@@ -182,23 +179,16 @@ class AttendancesController < ApplicationController
     end
   end
           
-  # 勤怠ログ
-  def edit_log
-    if params[:worked_on].present?
-      first_day = DateTime.parse(params[:worked_on] + "-" + "01") # 文字列で取得した日付に文字列の01を加えてdatetime型に型変換し月初日をセット
-      last_day = first_day.end_of_month # 月末日を取得
-      # Attendanceテーブルからworked_onの日付順で整列し、現在ログインしているユーザ、承認のものを取得し、paramsで取得した月に合致するものをセット
-      @approval_change_attendance_requests = Attendance.order(:worked_on).where(user_id: current_user, edit_attendance_request_status: "承認").where(worked_on: first_day..last_day) 
-      if @approval_change_attendance_requests.size > 0
-        render
-      else
-        flash.now[:danger] = "選択月の勤怠編集ログはありません。"
-      end
-    end
+  def edit_fix_log
+    @first_day = params[:date].nil? ?
+    Date.current.beginning_of_month : params[:date].to_date
+    @last_day = @first_day.end_of_month
+    @attendances = @user.attendances.where(request_change_status: "承認", worked_on: @first_day..@last_day).order(:user_id, :worked_on)
   end
 
+
   
-  
+
   private
   
   

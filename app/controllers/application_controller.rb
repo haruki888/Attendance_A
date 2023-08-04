@@ -33,6 +33,10 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # def logged_in(admin_user)
+  #   redirect_to(root_url)
+  # end
+  
   # アクセスしたユーザーが現在ログインしているユーザーか確認します。
   def correct_user
     redirect_to(root_url) unless current_user?(@user)
@@ -40,7 +44,7 @@ class ApplicationController < ActionController::Base
   
   # システム管理権限所有かどうか判定します。
   def admin_user
-    redirect_to root_url unless current_user.admin?
+    redirect_to(root_url) unless current_user.admin?
   end
 
   # 管理権限者、または現在ログインしているユーザーを許可します。
@@ -59,7 +63,6 @@ class ApplicationController < ActionController::Base
       redirect_to root_url
     end
   end
-
 
   def set_one_month
     @first_day = params[:date].nil? ?
