@@ -15,6 +15,7 @@ gem 'coffee-rails', '~> 4.2'
 gem 'jquery-rails'
 gem 'turbolinks',   '~> 5'
 gem 'jbuilder',     '~> 2.5'
+gem 'ransack'
 gem 'rounding'#時間単位の区切り設定
 gem 'roo'#（Excel, CSV, OpenOffice, GoogleSpreadSheetを開くことが可能）
 gem 'pry-rails'#binding.pry(debug)

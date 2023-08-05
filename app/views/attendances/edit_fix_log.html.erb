@@ -1,11 +1,13 @@
 <% provide(:title, '勤怠ログ') %>
 
   <h1>勤怠ログ</h1>
-  
+  <!--f.date_select(メソッド名, オプション={}, HTML属性={} or イベント属性={})-->
   <div class= "col-md-2">
     <%= form_with(url: edit_fix_log_user_attendance_path(@user), method: :get, local: true) do |f| %>
-      <%= f.date_select(:worked_on, {prompt: ["年","月"], start_year: Date.current.year - 3, end_year: Date.current.year, discard_day: true, use_month_numbers: true}, {class: "form-control search"}) %>
-      <%= f.submit '検索', class: "btn btn-block btn-primary" %>
+      <%= f.date_select :select_year, { end_year: Time.now.year, prompt: "年", discard_month: true, discard_day: true }, { class: "form-control" } %>
+      <%= f.date_select :select_month, { prompt: "月", discard_year: true, discard_day: true},{ class: "form-control" } %>
+      <%= f.submit '検索', class: "btn btn-block" %>
+      <%= f.submit 'リセット', class: "btn btn-block" %>
     <% end %>
   </div>
 
@@ -24,16 +26,18 @@
           </tr>
         </thead>
         <tbody>
-          <% @attendances.each do |day| %>
-            <tr>
-              <td><%= l(day.worked_on, format: :default) %></td>
-              <td><%= l(day.before_started_at, format: :time) if day.before_started_at.present? %></td>
-              <td><%= l(day.before_finished_at, format: :time) if day.before_finished_at.present? %></td>
-              <td><%= l(day.started_at, format: :time) if day.started_at.present? %></td>
-              <td><%= l(day.finished_at, format: :time) if day.finished_at.present? %></td>
-              <td><%= day.request_change_superior %></td>
-              <td><%= l(day.updated_at, format: :default) %></td>
-            </tr>
+          <% if @attendances.present? %>
+            <% @attendances.each do |day| %>
+              <tr>
+                <td><%= l(day.worked_on, format: :default) %></td>
+                <td><%= l(day.before_started_at, format: :time) if day.before_started_at.present? %></td>
+                <td><%= l(day.before_finished_at, format: :time) if day.before_finished_at.present? %></td>
+                <td><%= l(day.started_at, format: :time) if day.started_at.present? %></td>
+                <td><%= l(day.finished_at, format: :time) if day.finished_at.present? %></td>
+                <td><%= day.request_change_superior %></td>
+                <td><%= l(day.updated_at, format: :default) %></td>
+              </tr>
+            <% end %>
           <% end %>
         </tbody>
       </table>

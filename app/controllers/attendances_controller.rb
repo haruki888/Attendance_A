@@ -9,7 +9,7 @@ class AttendancesController < ApplicationController
   before_action :admin_or_correct_user, only: %i[update edit_one_month update_one_month]
   before_action :admin_limit, only: %i[edit_one_month]
   before_action :set_one_month, only: %i[edit_one_month edit_fix_log]
-  
+
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直して下さい。"
   
   # 出退勤打刻
@@ -180,15 +180,22 @@ class AttendancesController < ApplicationController
   end
           
   def edit_fix_log
-    @first_day = params[:date].nil? ?
-    Date.current.beginning_of_month : params[:date].to_date
-    @last_day = @first_day.end_of_month
-    @attendances = @user.attendances.where(request_change_status: "承認", worked_on: @first_day..@last_day).order(:user_id, :worked_on)
+    if params["select_year(1i)"].present? && params["select_month(2i)"].present?
+      @selected_date = Date.parse("#{params["select_year(1i)"]}/#{params["select_month(2i)"]}/1")
+    else
+      @selected_date = nil
+    end
+  
+    if params[:commit] == "リセット"
+      @attendances = []
+    elsif @selected_date.present?
+      @attendances = @user.attendances.where(request_change_status: "承認", worked_on: @selected_date.beginning_of_month..@selected_date.end_of_month).order(:worked_on)
+    else
+      @attendances = @user.attendances.where(request_change_status: "承認").order(:worked_on)
+    end
   end
 
-
   
-
   private
   
   
