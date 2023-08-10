@@ -1,6 +1,6 @@
 class AttendancesController < ApplicationController
   protect_from_forgery
-  include UsersHelper
+ #include UsersHelper
   
   before_action :set_user, only: %i[edit_one_month update_one_month edit_request_change update_request_change]
   before_action :set_user_id, only: %i[update edit_request_change update_request_change edit_request_overtime update_request_overtime edit_overtime_approval update_overtime_approval edit_fix_log]
@@ -82,18 +82,19 @@ class AttendancesController < ApplicationController
   #検索結果をworked_onカラムの値でソートし、user_idでグループ化
   
   
-  #勤怠変更申請モーダル更新
+  #勤怠変更申請モーダル承認
   def update_request_change
     request_count = 0
     request_change_params.each do |id, item|
       attendance = Attendance.find(id)
       if item[:change_check] == 1    
         if item[:request_change_status] == "承認"
-          attendance.before_started_at = attendance.started_at      #変更後出勤時間
-          attendance.before_finished_at = attendance.finished_at    #変更後退勤時間
-          item[:started_at] = attendance.after_started_at           #変更後出勤時間
-          item[:finished_at] = attendance.after_finished_at         #変更後退勤時間
-
+          if item[:before_started_at].present? && item[:before_finished_at].present?
+            item[:before_started_at] = attendance.started_at      #変更後出勤時間
+            item[:before_finished_at] = attendance.finished_at    #変更後退勤時間
+          end
+            item[:started_at] = attendance.after_started_at           #変更後出勤時間
+            item[:finished_at] = attendance.after_finished_at         #変更後退勤時間
         elsif item[:request_change_status] == "否認"
           item[:started_at] == nil if item[:started_at].present?
           item[:finished_at] == nil if item[:finished_at].present?
@@ -154,7 +155,7 @@ class AttendancesController < ApplicationController
     @attendances = Attendance.where(request_overtime_superior: @user.name, request_overtime_status: "申請中").order(:worked_on).group_by(&:user_id)
   end
   
-  #残業申請通知承認モーダル更新
+  #残業申請通知モーダル承認更新
   def update_overtime_approval
     overtime_approval_params.each do |id, item|
       attendance = Attendance.find(id)
@@ -180,18 +181,20 @@ class AttendancesController < ApplicationController
   end
           
   def edit_fix_log
+   #debugger
     if params["select_year(1i)"].present? && params["select_month(2i)"].present?
-      @selected_date = Date.parse("#{params["select_year(1i)"]}/#{params["select_month(2i)"]}/1")
+      @first_day = Date.parse("#{params["select_year(1i)"]}/#{params["select_month(2i)"]}/1")
+      # parseメソッドは、引数でJSON形式の文字列をRubyのオブジェクトに変換して返すメソッド
     else
-      @selected_date = nil
+      @first_day = nil
     end
   
     if params[:commit] == "リセット"
       @attendances = []
-    elsif @selected_date.present?
-      @attendances = @user.attendances.where(request_change_status: "承認", worked_on: @selected_date.beginning_of_month..@selected_date.end_of_month).order(:worked_on)
+    elsif @first_day.present?
+      @attendances = @user.attendances.where(request_change_status: "承認", worked_on: @first_day..@first_day.end_of_month).order(:worked_on)
     else
-      @attendances = @user.attendances.where(request_change_status: "承認").order(:worked_on)
+      @attendances = nil
     end
   end
 

@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   $days_of_the_week = %w{日 月 火 水 木 金 土}   #<%= csrf_meta_tags %> applicaiton.html.erb.rbとセット 
           #↑
   #グローバル変数
-  #リテラル表記 #["日", "月", "火", "水", "木", "金", "土"]の配列と同じように使えます
+  #リテラル表記 #["日", "月", "火", "水", "木", "金", "土"]の配列と同じように使える
   
 
 # beforフィルター  

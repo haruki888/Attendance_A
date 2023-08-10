@@ -44,7 +44,7 @@
                   <% end %>
                 </td>
               <% end %>
-              <td><%= f.check_box :next_day %></td>
+              <td><%= attendance.check_box :next_day %></td>
               <td>
                 <% if day.started_at.present? && day.finished_at.present? %>
                   <%= working_times(day.started_at, day.finished_at, day.next_day) %>

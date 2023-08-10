@@ -21,15 +21,17 @@ class UsersController < ApplicationController
     @change_sum = Attendance.where(request_change_superior: @user.name, request_change_status: "申請中").count#勤怠変更時間を上長に申請している日の合計を出す。
     @one_month_sum = Attendance.where(one_month_approval_superior: @user.name, one_month_approval_status: "申請中").count#1ヶ月の勤怠申請している月を取得する
     
-    #勤怠ログ出力ボタン
+    # csv出力
     respond_to do |format|
       format.html
       format.csv do |csv|
-        send_attendances_csv(@attendance)
+        send_attendances_csv(@attendances)
       end
     end
-  end  
+  end
 
+  
+  
   def show_verify
     @worked_sum = @attendances.where.not(started_at: nil).count
     @overtime_sum = Attendance.where(request_overtime_superior: @user.name, request_overtime_status: "申請中").count
@@ -59,7 +61,7 @@ class UsersController < ApplicationController
     if @user.update_attributes(user_params)
       flash[:success] = "ユーザー情報を更新しました。"
       redirect_to @user
-    els
+    else
       render :edit
     end
   end
@@ -126,25 +128,24 @@ class UsersController < ApplicationController
   end
 
 
-  #CSVファイルを出力する
+  #勤怠一覧CSVファイルエクスポート
   def send_attendances_csv(attendance)
     csv_data = CSV.generate do |csv|
       header = %w(日付 出勤時間 退勤時間)
       csv << header
       attendances.each do |day|
-        values = [
+        values = 
            l(day.worked_on, format: :default),
-           if day.started_at.present? && (request_change_status == "承認").present?
+           if day.started_at.present? && request_change_status == "承認"
              l(day.started_at, :Time.current.floor_to(15.minutes))
            else
              nil
-           end,
-           if day.finished_at.present? && (request_change_status == "承認").present?
+           end
+           if day.finished_at.present? && request_change_status == "承認"
              l(day.finished_at, :Time.current.floor_to(15.minutes))
            else
              nil
            end
-          ]
         #表の行に入る値を定義
         csv << values
       end
