@@ -1,46 +1,45 @@
 <% provide(:title, '勤怠ログ') %>
-
-  <h1>勤怠ログ</h1>
-  <!--f.date_select(メソッド名, オプション={}, HTML属性={} or イベント属性={})-->
-  <div class= "col-md-2">
-    <%= form_with(url: edit_fix_log_user_attendance_path(@user), method: :get, local: true) do |f| %>
-      <%= f.date_select :select_year, { end_year: Time.now.year, prompt: "年", discard_month: true, discard_day: true }, { class: "form-control" } %>
-      <%= f.date_select :select_month, { prompt: "月", discard_year: true, discard_day: true},{ class: "form-control" } %>
-      <%= f.submit '検索', class: "btn btn-block" %>
-      <%= f.submit 'リセット', class: "btn btn-block" %>
-    <% end %>
-  </div>
-
-
-  <div class="row"><!-- 横並びにしたいコンテンツがある時使用 -->
-    <div class= "col col-md-12">
-      <table class= "table table-bordered" id = "table-attendances">
-        <thead>
-          <tr>
-            <th>日付</th>
-            <th>変更前出社時間</th>
-            <th>変更前退社時間</th>
-            <th>変更後出社</th>
-            <th>変更後退社</th>
-            <th>指示者</th>
-            <th>承認日</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if @attendances.present? %>
-            <% @attendances.each do |day| %>
-              <tr>
-                <td><%= l(day.worked_on, format: :default) %></td>
-                <td><%= l(day.started_at, format: :time) if day.started_at.present? %></td>
-                <td><%= l(day.finished_at, format: :time) if day.finished_at.present? %></td>
-                <td><%= l(day.after_started_at, format: :time) if day.after_started_at.present? %></td>
-                <td><%= l(day.after_finished_at, format: :time) if day.after_finished_at.present? %></td>
-                <td><%= day.request_change_superior %></td>
-                <td><%= l(day.updated_at, format: :short) %></td>
-              </tr>
-            <% end %>
+  <div class="container">
+    <h1>勤怠ログ</h1>
+      <div style="float: left;">
+      <%= form_with(url: edit_fix_log_user_attendance_path(@user), method: :get, local: true) do |f| %>
+        <%= f.date_select :select_year, { end_year: Time.now.year, prompt: "年", discard_month: true, discard_day: true }, { class: "form-control" } %>
+          <%= "#{params.dig(:user, :select_year)}年" if params.dig(:user, :select_year).present? %>
+        <%= f.date_select :select_month, { prompt: "月", discard_year: true, discard_day: true},{ class: "form-control" } %>
+          <%= "#{params.dig(:user, :select_month)}月" if params.dig(:user, :select_month).present? %>
+        <div class='btn-toolbar' role="toolbar">
+          <%= f.submit '検索', class: "btn btn-primary" %>
+          <%= f.submit 'リセット', class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+    <table class= "table table-bordered" id = "table-attendances">
+      <thead>
+        <tr>
+          <th>日付</th>
+          <th>変更前出社時間</th>
+          <th>変更前退社時間</th>
+          <th>変更後出社</th>
+          <th>変更後退社</th>
+          <th>指示者</th>
+          <th>承認日</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @attendances.present? %>
+          <% @attendances.each do |day| %>
+            <tr>
+              <td><%= day.worked_on.strftime("%Y年%m月%d日") %></td>
+              <td style="width: 12.5%;"><%= l(day.started_at, format: :time) if day.started_at.present? %></td>
+              <td style="width: 12.5%;"><%= l(day.finished_at, format: :time) if day.finished_at.present? %></td>
+              <td style="width: 12.5%;"><%= l(day.after_started_at, format: :time) if day.after_started_at.present? %></td>
+              <td style="width: 12.5%;"><%= l(day.after_finished_at, format: :time) if day.after_finished_at.present? %></td>
+              <td><%= day.request_change_superior %></td>
+              <td><%= day.updated_at.strftime("%Y年%m月%d日") %></td>
+            </tr>
           <% end %>
-        </tbody>
-      </table>
-    </div> 
+        <% end %>
+      </tbody>
+    </table>
   </div>
+</div>
