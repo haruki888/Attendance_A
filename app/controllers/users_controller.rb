@@ -21,11 +21,11 @@ class UsersController < ApplicationController
     @change_sum = Attendance.where(request_change_superior: @user.name, request_change_status: "申請中").count#勤怠変更時間を上長に申請している日の合計を出す。
     @one_month_sum = Attendance.where(one_month_approval_superior: @user.name, one_month_approval_status: "申請中").count#1ヶ月の勤怠申請している月を取得する
     
-    # csv出力
-    respond_to do |format|
-      format.html
-      format.csv do |csv|
-        send_attendances_csv(@attendances)
+    # 勤怠一覧CSVファイル出力
+    respond_to do |format| #respont_to (HTML、JSON、XMLなど）に対して異なるレスポンスを生成する際に使用。
+      format.html #HTML形式のレスポンスを生成。
+      format.csv do |csv| #CSV形式のリクエストに対するレスポンスを定義
+        send_attendances_csv(@attendances) #send_attendances_csv メソッドによってCSVデータが生成され、それがレスポンスとして返される仕組み。
       end
     end
   end
@@ -133,9 +133,12 @@ class UsersController < ApplicationController
     csv_data = CSV.generate do |csv|
       header = %w(日付 出勤時間 退勤時間)
       csv << header
+      
       attendances.each do |day|
-        values = 
-           l(day.worked_on, format: :default),
+        values = [ l(day.worked_on, format: :default), day.start_time.strftime("%H:%M"), day.finish_time.strftime("%H:%M")]
+        #表の行に入る値を定義
+        csv << values
+
            if day.started_at.present? && request_change_status == "承認"
              l(day.started_at, :Time.current.floor_to(15.minutes))
            else
@@ -146,8 +149,6 @@ class UsersController < ApplicationController
            else
              nil
            end
-        #表の行に入る値を定義
-        csv << values
       end
      end
      send_data(csv_data, filename: "勤怠一覧.csv")
