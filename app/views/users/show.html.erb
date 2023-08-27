@@ -55,7 +55,7 @@
 
 <div class="btn-attendance">
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
-  <%= link_to "CSV出力", import_users_path(format: :csv), class: "btn btn-primary" %>
+  <%= link_to "CSV出力", user_path(format: :csv), class: "btn btn-primary" %>
   <%= link_to "勤怠修正ログ（承認済）", edit_fix_log_user_attendance_path(@user), class: "btn btn-primary" %>
 </div>
 
@@ -148,17 +148,26 @@
         <td colspan = "5">総合勤務時間</td>
         <td colspan = "2">累計在社時間</td>
         <td colspan = "3" rowspan = "2"></td>
-        <td colspan = "2" rowspan = "2">
-          <label>所属長承認 未</label><br>
-            <select class="d-grid gap-2 col-3 mx-auto">
-              <button type="button" class= "btn btn-outline-dark btn-block" id= "select">Dark<span "caret"></span>
-                <option >選択して下さい</option>
-                <option ><%= link_to "上長A", "#" %></option>
-                <option ><%= link_to "上長B", "#" %></option>
-              </button>
-            </select>
-            
-          <button type="button" class="btn btn-primary btn-block">申請</button>
+        <td rowspan = "2"></td>
+        <td rowspan = "2">
+          <div class="form-group">
+            <%= form_with(model: @attendance, url: attendances_update_one_month_apply_user_path(@user), local: true, method: :patch) do |f| %>
+              <%= f.fields_for "attendances[]", @attendance do |attendance| %>
+                <%= "所属長承認　未" %><br> 
+                <% if @attendance.one_month_apply_status.nil? && @attendance.one_month_apply_status == "なし" %>
+                  <%= "所属長承認　未" %>
+                <% elsif @attendance.one_month_apply_status == "申請中" %>
+                  <%= "所属長承認 #{@attendance.one_month_apply_superior}へ申請中" %>
+                <% elsif @attendance.one_month_apply_status == "否認" %>
+                  <%= "所属長承認 #{@attendance.one_month_apply_superior}より否認" %>
+                <% elsif @attendance.one_month_apply_status == "承認" %>
+                  <%= "所属長承認 #{@attendance.one_month_apply_superior}より承認" %>
+                <% end %>
+                  <%= f.collection_select :one_month_apply_superior, @superiors, :name, :name, include_blank: true, required: true, class: "form-control" %>
+              <% end %>
+              <%= f.submit '申請', class: "btn btn-primary btn-block" %>
+            <% end %>
+          </div>
         </td>
       </tr>
       <tr>

@@ -9,6 +9,25 @@ module AttendancesHelper  #ViewをDRY（Don’t Repeat Yourself）に作る
     #どれにも当てはまらなかった場合はfalseを返します。
     return false
   end
+
+  # 出勤時間と退勤時間を受け取り、実際の労働時間を秒単位で在社時間を計算して返します。
+  def working_times(start, finish, next_day)
+    if next_day
+      format("%.2f", (finish- start) / 60 / 60.0 + 24)
+    else
+      format("%.2f", (finish - start) / 60 / 60.0)
+    end
+  end
+  
+  #時間外時間
+  def working_overtimes(designated_work_end_time, scheduled_end_time, next_day)
+      if next_day
+        format("%.2f", ((scheduled_end_time.hour - designated_work_end_time.hour) + ((scheduled_end_time.min - designated_work_end_time.min) / 60.0) + 24))
+      else
+        format("%.2f", (scheduled_end_time.hour - designated_work_end_time.hour) + ((scheduled_end_time.min - designated_work_end_time.min) / 60.0))
+      end
+  end
+
   
    #不正な値があるか確認する
   def attendances_invalid?

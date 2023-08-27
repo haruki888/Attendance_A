@@ -1,6 +1,6 @@
 class BasesController < ApplicationController
   before_action :admin_user
-  before_action :set_base, only: %i[:index :update :destroy]
+  before_action :set_base, only: %i[index edit update destroy]
   
   def index
     @user = User.new

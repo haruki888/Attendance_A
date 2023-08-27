@@ -1,9 +1,8 @@
 <% provide(:title, "拠点一覧") %>
 
-<div class = "container">  
   <h1>拠点一覧</h1>
     <div class= "col-md-10 col-md-offset-1">
-      <table class = "table table-bordered table-condensed table-hover">
+      <table class = "table table-bordered table-condensed table-hover" id = "table">
         <thead>
           <tr>
             <th></th>
@@ -18,13 +17,14 @@
           <tbody>
             <tr>
               <td><%= link_to "修正", edit_basis_path(base), remote: true, class: "btn btn-primary" %></td>
-              <td><%= link_to "削除", base, method: :delete, data: {confirm: "削除してよろしいですか?" }, class: "btn btn-danger" %></td>
+              <td><%= link_to "削除", base, method: :delete, data: {confirm: "削除してよろしいですか?" }, class: "btn btn-primary" %></td>
               <td><%= base.base_number %></td>
               <td><%= base.base_name %></td>
               <td><%= base.base_type %></td>
             </tr>
           </toboy>
         <% end %>
+    </table>
     
     <div class="panel-group">
       <div class="panel panel-default">
@@ -40,7 +40,6 @@
         </div>
       </div>
     </div>      
-</div>
 
 <!--モーダルウィンドウ表示-->
 <div id="edit" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

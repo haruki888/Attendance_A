@@ -21,17 +21,18 @@ ActiveRecord::Schema.define(version: 20230131123847) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "scheduled_end_time"
-    t.string "one_month_request_superior"
-    t.string "one_month_request_status"
+    t.string "one_month_apply_superior"
+    t.string "one_month_apply_status"
     t.string "one_month_approval_superior"
     t.string "one_month_approval_status"
-    t.boolean "change_check", default: false
+    t.boolean "approval_check", default: false
     t.string "request_change_superior"
     t.string "request_change_status"
     t.datetime "before_started_at"
     t.datetime "before_finished_at"
     t.datetime "after_started_at"
     t.datetime "after_finished_at"
+    t.boolean "change_check", default: false
     t.string "request_overtime_superior"
     t.string "request_overtime_status"
     t.boolean "next_day", default: false
@@ -57,13 +58,13 @@ ActiveRecord::Schema.define(version: 20230131123847) do
     t.string "password_digest"
     t.string "remember_digest"
     t.boolean "admin", default: false
-    t.datetime "basic_work_time", default: "2023-07-17 23:00:00"
-    t.datetime "work_time", default: "2023-07-17 22:30:00"
+    t.datetime "basic_work_time", default: "2023-08-26 23:00:00"
+    t.datetime "work_time", default: "2023-08-26 22:30:00"
     t.boolean "superior", default: false
     t.integer "employee_number", default: 0
     t.string "uid"
-    t.datetime "designated_work_start_time", default: "2023-07-17 23:30:00"
-    t.datetime "designated_work_end_time", default: "2023-07-18 08:30:00"
+    t.datetime "designated_work_start_time", default: "2023-08-26 23:30:00"
+    t.datetime "designated_work_end_time", default: "2023-08-27 08:30:00"
     t.string "affiliation"
     t.index ["email"], name: "index_users_on_email", unique: true
   end

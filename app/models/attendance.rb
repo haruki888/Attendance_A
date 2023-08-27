@@ -4,7 +4,7 @@ class Attendance < ApplicationRecord
   validates :worked_on, presence: true
   validates :note, length: {maximum: 50}
   require 'date'
-  require 'csv'
+  #require 'csv'
   
   #出勤時間が存在しない場合、退勤時間は無効
   validate :finished_at_is_invalid_without_a_started_at
@@ -31,22 +31,22 @@ class Attendance < ApplicationRecord
       errors.add(:started_at, 'より早い退勤時間は無効です') if started_at > finished_at
     end
   end
-
+end
   # def after_started_at_than_after_finished_at_fast_if_invalid
   #   if after_started_at.present? && after_finished_at.present?
   #     errors.add(:after_started_at, 'より早い退勤時間は無効です') if after_started_at > after_finished_at
   #   end
 
-  #勤怠一覧出力
-  def self.to_csv
-    attributes = %w[date started_at finished_at ]
+#   #勤怠一覧出力
+#   def self.to_csv
+#     attributes = %w[date started_at finished_at ]
 
-    CSV.generate(headers: true) do |csv|
-      csv << attributes
+#     CSV.generate(headers: true) do |csv|
+#       csv << attributes
 
-      all.each do |attendance|
-        csv << attributes.map{ |attr| attendance.send(attr) }
-      end
-    end
-  end
-end
+#       all.each do |attendance|
+#         csv << attributes.map{ |attr| attendance.send(attr) }
+#       end
+#     end
+#   end
+# end

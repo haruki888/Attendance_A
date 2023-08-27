@@ -2,8 +2,24 @@ class AttendancesController < ApplicationController
   protect_from_forgery
  #include UsersHelper
   
-  before_action :set_user, only: %i[edit_one_month update_one_month edit_request_change update_request_change]
-  before_action :set_user_id, only: %i[update edit_request_change update_request_change edit_request_overtime update_request_overtime edit_overtime_approval update_overtime_approval edit_fix_log]
+  before_action :set_user, only: %i[
+    edit_one_month
+    update_one_month
+    edit_request_change
+    update_request_change
+    one_month_apply
+    edit_one_month_approval
+    update_one_month_approval
+  ]
+  before_action :set_user_id, only: %i[
+    update edit_request_change
+    update_request_change
+    edit_request_overtime
+    update_request_overtime
+    edit_overtime_approval
+    update_overtime_approval
+    edit_fix_log
+  ]
   before_action :set_attendance_id, only: %i[update edit_request_overtime update_request_overtime]
   before_action :logged_in_user, only: %i[update edit_one_month]
   before_action :admin_or_correct_user, only: %i[update edit_one_month update_one_month]
@@ -16,13 +32,13 @@ class AttendancesController < ApplicationController
   def update
     attendance = Attendance.find(params[:id])
       if attendance.started_at.nil?
-        if attendance.update(started_at: Time.current.floor_to(15.minutes))
+        if attendance.update(started_at: Time.current.change(sec: 0))
           flash[:info] = "おはようございます！"
         else
           flash[:danger] = UPDATE_ERROR_MSG
         end
       else attendance.finished_at.nil?
-        if attendance.update(finished_at: Time.current.floor_to(15.minutes))
+        if attendance.update(finished_at: Time.current.change(sec: 0))
           flash[:info] = "お疲れ様でした。"
         else
           flash[:danger] = UPDATE_ERROR_MSG
@@ -74,54 +90,50 @@ class AttendancesController < ApplicationController
     return
   end
 
-
-  #勤怠変更申請モーダル
+  #勤怠変更申請お知らせモーダル
   def edit_request_change
     @attendances = Attendance.where(request_change_superior: @user.name, request_change_status: "申請中").order(:worked_on).group_by(&:user_id)
   end
   #検索結果をworked_onカラムの値でソートし、user_idでグループ化
+  # &はブロックの省略形式
   
-  
-  #勤怠変更申請モーダル承認
+  # 勤怠変更申請モーダル承認
   def update_request_change
     request_count = 0
     request_change_params.each do |id, item|
-      attendance = Attendance.find(id)
-      if item[:change_check] == 1    
+      attendance = Attendance.find(id) # 出勤情報を取得
+  
+      if item[:change_check] == "1"
         if item[:request_change_status] == "承認"
           if item[:before_started_at].present? && item[:before_finished_at].present?
-            item[:before_started_at] = attendance.started_at      #変更後出勤時間
-            item[:before_finished_at] = attendance.finished_at    #変更後退勤時間
+            item[:before_started_at] = attendance.started_at      # 変更後出勤時間
+            item[:before_finished_at] = attendance.finished_at    # 変更後退勤時間
           end
-            item[:started_at] = attendance.after_started_at           #変更後出勤時間
-            item[:finished_at] = attendance.after_finished_at         #変更後退勤時間
-        elsif item[:request_change_status] == "否認"
-          item[:started_at] == nil if item[:started_at].present?
-          item[:finished_at] == nil if item[:finished_at].present?
-          item[:note] == nil
-          
-        elsif item[:request_change_status] == 'なし'
-          attendance.after_started_at == nil if attendance.after_started_at.present?
-          attendance.after_finished_at == nil if attendance.after_finished_at.present?
-          item[:note] == nil
+          item[:started_at] = attendance.after_started_at if attendance.after_started_at.present? # 変更後出勤時間
+          item[:finished_at] = attendance.after_finished_at if attendance.after_finished_at.present? # 変更後退勤時間
+        elsif item[:request_change_status] == "なし"
+          attendance.after_started_at = nil if attendance.after_started_at.present?
+          attendance.after_finished_at = nil if attendance.after_finished_at.present?
+          item[:request_change_status] = nil if item[:request_change_status].present?
+          item[:note] = nil
+        elsif item[:request_change_status] == "申請中"
+          flash[:danger] = "指示者確認㊞を選択して下さい。"
+          redirect_to user_url(@user) and return
         end
-        
-      elsif item[:change_check] == 0
-        flash[:danger] = '変更チェックを入力してください。'
-        redirect_to user_url(@user)
-        return
       end
+     
       request_count += 1
       attendance.update(item)
     end
+ 
     if request_count > 0
-      flash[:success] = "勤怠変更の申請結果を#{request_count}件送信されました。"
+      flash[:success] = "勤怠変更の申請結果を#{request_count}件送信しました。"
+      redirect_to user_url(@user)
     else
-      flash[:danger] = '勤怠変更の申請が不十分です。'
+      flash[:danger] = "勤怠変更申請の承認が不十分です。"
+      redirect_to user_url(@user)
     end
-    redirect_to user_url(@user) and return
   end
-  
   
   #残業申請モーダル
   def edit_request_overtime
@@ -159,7 +171,7 @@ class AttendancesController < ApplicationController
   def update_overtime_approval
     overtime_approval_params.each do |id, item|
       attendance = Attendance.find(id)
-        if item[:overtime_check] == 1
+        if item[:overtime_check] == "1"
           if item[:request_overtime_status] == "承認"
             item[:scheduled_end_time] > item[:designated_work_end_time] if item[:designated_work_end_time].present?
           elsif item[:request_overtime_status] == "否認"
@@ -169,9 +181,12 @@ class AttendancesController < ApplicationController
             item[:designated_work_end_time] = nil
             item[:work_description] = nil
             item[:request_overtime_status] = nil
+          elsif item[:request_overtime_status] == "申請中"
+            flash[:danger] = "指示者確認㊞を選択して下さい。"
+            redirect_to user_url(@user) and return
           end
-        elsif item[:overtime_check] == 0
-          flash[:danger] = '変更欄にチェックを入力してください。'
+        else
+          flash[:danger] = '残業申請結果に不備があります。再度確認して下さい。'
           redirect_to user_url(@user) and return
         end
         attendance.update(item)
@@ -179,9 +194,50 @@ class AttendancesController < ApplicationController
         redirect_to user_url(@user) and return
     end
   end
-          
+
+  #1ヶ月勤怠申請
+  def update_one_month_apply
+    one_month_apply_params.each do |id, item|
+      attendance = Attendace.find(id)
+      if item[:one_month_apply_superior].present?
+        item[:one_month_apply_status] = "申請中"
+      elsif item[:one_month_apply_superior].blank?
+        flash[:danger] = "上長を選択して下さい"
+        redirect_to user_url(@user)
+      end
+      attendance.update(item)
+      flash[:success] = "1ヶ月勤怠申請を送信しました。"
+    end
+    redirect_to user_url(@user)
+  end
+  
+  
+  #1ヶ月勤怠申請通知モーダル
+  def edit_one_month_approval
+    @attendances = Attendance.where(one_month_request_superior: @user.name, one_month_request_status: "申請中").order(:worked_on).group_by(&:user_id)
+  end
+
+  #1ヶ月勤怠申請承認
+  def update_one_month_approval
+    update_one_month_approval.each do |id, item|
+      attendance = Attendance.find(id)
+        if item[:approval_check] == "1"
+          item[:one_month_approval_status] == "承認"
+          item[:one_month_approval_status] == "否認"
+          item[:one_month_approval_status] == "なし"
+        elsif item[:approval_check] == "0" 
+          flash[:danger] = "勤怠確認をチェックして下さい。"
+          redirect_to user_url(@user) and return
+        elsif item[:one_month_approval_status] == "申請中"
+          flash[:danger] = "指示者確認㊞を選択して下さい。"
+        end
+        attendance.update(item)
+        flash[:success] = '1ヶ月申請結果を送信しました。'
+    end
+  end
+  
+  
   def edit_fix_log
-   #debugger
     if params["select_year(1i)"].present? && params["select_month(2i)"].present?
       @first_day = Date.parse("#{params["select_year(1i)"]}/#{params["select_month(2i)"]}/1")
       # parseメソッドは、引数でJSON形式の文字列をRubyのオブジェクトに変換して返すメソッド
@@ -203,14 +259,24 @@ class AttendancesController < ApplicationController
   
   
   
-  # 1ヶ月分の勤怠情報を扱います
+  #1ヶ月分の勤怠情報
   def attendances_params
     params.require(:user).permit(attendances: [:started_at, :finished_at, :after_started_at, :after_finished_at, :note, :next_day, :request_change_superior, :request_change_status])[:attendances]
   end
   
+  #1ヶ月の勤怠申請
+  def one_month_apply_params
+    params.require(:user).permit(attendances: [:one_month_apply_superior, :one_month_apply_status])[:attendances]
+  end
+  
+  #1ヶ月の勤怠承認
+  def one_month_approval_params
+    params.require(:user).permit(attendances: [:one_month_approval_superior, :one_month_approval_status, :approval_check])[:attendances]
+  end
+  
   #勤怠変更申請
   def request_change_params
-    params.require(:user).permit(attendances: [:after_started_at, :after_finished_at, :request_change_status, :change_check, :note, :user_id])[:attendances]
+    params.require(:user).permit(attendances: [:before_started_at, :before_finished_at, :after_started_at, :after_finished_at, :request_change_status, :change_check, :note, :id])[:attendances]
   end
   
   #残業申請
@@ -221,10 +287,5 @@ class AttendancesController < ApplicationController
   #残業申請承認
   def overtime_approval_params
     params.require(:user).permit(attendances: [:overtime_check, :request_overtime_status, :designated_work_end_time, :user_id])[:attendances]
-  end
-  
-  def import
-    User.import(params[:file])
-    redirect_to root_url
   end
 end

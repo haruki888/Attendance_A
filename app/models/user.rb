@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  #require 'csv'
+  require 'csv'
   has_many :attendances, dependent: :destroy
   attribute :scheduled_end_time, :time
   #attr = attribute(属性）
@@ -72,24 +72,20 @@ class User < ApplicationRecord
     User.where(['name LIKE ?', "%#{search}%"])
   end
 
+  
   def self.import(file)
     CSV.foreach(file.path, headers: true) do |row|
-      # headers: trueは、CSVファイルの1行目をヘッダとして扱うためのオプション
-      # IDが見つかれば、レコードを呼び出し、見つかれなければ、新しく作成
-      user = User.find_by(id: row["id"]) || User.new
-      # CSVからデータを取得し、設定する
-      user.attributes = row.to_hash.slice(*updatable_attributes)
-      # *可変長引数とは、引数の数を可変的に受け取ることができる。
-      user.save!
-    end
+      user = find_by(id: row["id"]) || new # IDが見つかれば、レコードを呼び出し、見つかれなければ、新しく作成
+      user.attributes = row.to_hash.slice(*updatable_attributes)  # CSVからデータを取得し、設定する
+      user.save!(validate: false)
+    end 
   end
   
-  
-    # 更新を許可するカラムを定義
-    def self.updatable_attributes
-      ["name", "email", "affiliation", "employee_number", "uid",
-      "basic_work_time", "designated_work_start_time", "designated_work_end_time",
-      "superior", "admin", "password"]
-    end
+  # ユーザー一覧　ユーザー編集　更新を許可するカラムを定義
+  def self.updatable_attributes
+    ["name", "email", "affiliation", "employee_number", "uid",
+    "basic_work_time", "designated_work_start_time", "designated_work_end_time",
+    "superior", "admin", "password"]
+  end
 end
 
