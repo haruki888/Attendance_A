@@ -8,38 +8,38 @@ Rails.application.routes.draw do
   delete '/logout', to: 'sessions#destroy'
 
   resources :bases
-    #patch '/users/:id/update_basic_info', to: 'users#update_basic_info', as: 'update_basic_info_user'
 
   resources :users do
     collection { post :import }         #:idでurlを識別する必要がない場合はcollectionで設定
     member do                 #:idがつくURIを生成する
-      get 'edit_basic_info'                  #基本情報編集
-      patch 'update_basic_info'              #基本情報更新
+      get 'edit_basic_info'                     #基本情報編集
+      patch 'update_basic_info'                 #基本情報更新
 
-      get 'attendances/edit_one_month'       #勤怠編集画面
-      patch 'attendances/update_one_month'   #勤怠編集画面登録
+      get 'attendances/edit_one_month'          #勤怠編集画面
+      patch 'attendances/update_one_month'      #勤怠編集画面登録
 
-      patch 'attendances/update_one_month_apply'  #1ヶ月勤怠申請
+      get 'attendances/edit_one_month_apply'    #1ヶ月勤怠申請
+      patch 'attendances/update_one_month_apply'#1ヶ月勤怠申請
+
+      get 'show_verify'                         #上長勤怠確認
       
-      get 'show_verify'                      #上長勤怠確認
-      
-      get 'commuting_employee'               #出勤中社員一覧
+      get 'commuting_employee'                  #出勤中社員一覧
       
       get :export, defaults: { format: 'csv' }
     end
     resources :attendances, only: :update do
       member do
-        get 'edit_request_change'       #勤怠変更申請
+        get 'edit_request_change'       #勤怠変更申請モーダル
         patch 'update_request_change'   #勤怠変更申請承認
         
-        get 'edit_request_overtime'      #残業申請
+        get 'edit_request_overtime'      #残業申請モーダル
         patch 'update_request_overtime'  #残業申請登録
         
-        get 'edit_overtime_approval'     #残業承認
+        get 'edit_overtime_approval'     #残業申請通知モーダル
         patch 'update_overtime_approval' #残業承認登録
         
-        get 'edit_one_month_approval'    #1ヶ月の勤怠申請
-        patch 'update_one_month_approval'#1ヶ月の勤怠承認
+        get 'edit_one_month_approval'    #1ヶ月勤怠申請通知モーダル
+        patch 'update_one_month_approval'#1ヶ月勤怠承認
         
         get 'edit_fix_log'               #勤怠修正ログ (承認済)
       end

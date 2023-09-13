@@ -36,7 +36,7 @@
                   </thead>
                   <tbody>
                     <% attendances.each do |day| %>
-                      <%= f.fields_for "attendances[]", day do |attendance| %>
+                      <%= f.fields_for "attendances[]", day do |a| %>
                         <tr>
                           <td><%= l(day.worked_on, format: :short) if day.worked_on.present? %></td>
                           <td class= '<%= "wday#{day.worked_on.wday}" %>'><%= $days_of_the_week[day.worked_on.wday] %></td>
@@ -50,9 +50,8 @@
                             <% end %>
                           </td>
                           <td><%= day.work_description %></td>
-                          <td><%= attendance.select :request_overtime_status, [:なし, :申請中, :承認, :否認] %></td>
-                          <td><%= attendance.check_box :overtime_check %></td>
-                          <!--チェックされている時はtrueが、されていない時はfalseが送られます。-->
+                          <td><%= a.select :request_overtime_status, [:なし, :申請中, :承認, :否認] %></td>
+                          <td><%= a.check_box :overtime_check %></td>
                           <td><%= link_to "確認", show_verify_user_path(user, date: day.worked_on.beginning_of_month),class: "btn btn-primary" %></td>
                         </tr>
                       <% end %>
@@ -60,7 +59,7 @@
                   </tbody>
                 </table>
                 <div class = "center">
-                  <%= f.submit "変更を送信する", class: "btn btn-primary btn-block" %>
+                  <%= f.submit yield(:btn_text), class: "btn btn-primary btn-block" %>
                 </div>
             <% end %>
           <% end %>  

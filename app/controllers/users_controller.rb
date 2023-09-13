@@ -15,13 +15,12 @@ class UsersController < ApplicationController
   end
  
   def show
-    @user = User.find(params[:id])
     @attendance = @user.attendances.find_by(worked_on: Date.current.beginning_of_month)
     @superiors = User.where(superior: true).where.not(id: @user.id)#一般ユーザーでなく上長を取得する。
     @worked_sum = @attendances.where.not(started_at: nil).count#出勤がない日以外を取得し、合計を出す。
     @overtime_sum = Attendance.where(request_overtime_superior: @user.name, request_overtime_status: "申請中").count#残業申請を上長に申請している日の合計を出す。
     @change_sum = Attendance.where(request_change_superior: @user.name, request_change_status: "申請中").count#勤怠変更時間を上長に申請している日の合計を出す。
-    @one_month_sum = Attendance.where(one_month_approval_superior: @user.name, one_month_approval_status: "申請中").count#1ヶ月の勤怠申請している月を取得する
+    @one_month_sum = Attendance.where(one_month_apply_superior: @user.name, one_month_apply_status: "申請中").count#1ヶ月の勤怠申請している月を取得する
     
     # 勤怠一覧CSVファイルエクスポート
     respond_to do |format| #respont_to (HTML、JSON、XMLなど）に対して異なるレスポンスを生成する際に使用。
@@ -36,7 +35,7 @@ class UsersController < ApplicationController
     @worked_sum = @attendances.where.not(started_at: nil).count
     @overtime_sum = Attendance.where(request_overtime_superior: @user.name, request_overtime_status: "申請中").count
     @change_sum = Attendance.where(request_change_superior: @user.name, request_change_status: "申請中").count
-    @one_month_sum = Attendance.where(one_month_approval_superior: @user.name, one_month_approval_status: "申請中").count
+    @one_month_sum = Attendance.where(one_month_apply_superior: @user.name, one_month_apply_status: "申請中").count
   end  
 
   def new
