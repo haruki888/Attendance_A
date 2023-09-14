@@ -172,9 +172,14 @@ class AttendancesController < ApplicationController
           flash[:danger] = "指示者確認㊞を選択して下さい。"
           redirect_to user_url(@user) and return
         end
-      else
-        flash[:danger] = '残業申請結果に不備があります。再度確認して下さい。'
-        redirect_to user_url(@user) and return
+      elsif item[:overtime_check] == "0"
+        if item[:request_overtime_status] == "申請中"
+          flash[:danger] = "変更チェックを入れ、指示者確認㊞を選択して下さい。"
+          redirect_to user_url(@user) and return
+        else
+          flash[:danger] = "変更チェックを入れて下さい。"
+          redirect_to user_url(@user) and return
+        end
       end
       attendance.update(item)
       flash[:success] = '残業申請結果を送信しました。'
