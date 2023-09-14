@@ -34,20 +34,21 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  # def logged_in(admin_user)
-  #   redirect_to(root_url)
-  # end
-  
   # アクセスしたユーザーが現在ログインしているユーザーか確認します。
   def correct_user
-    redirect_to(root_url) unless current_user?(@user)
+    redirect_to root_url unless current_user?(@user)
   end
   
   # システム管理権限所有かどうか判定します。
   def admin_user
-    redirect_to(root_url) unless current_user.admin?
+    redirect_to root_url unless current_user.admin?
   end
 
+  #管理者のアクセスを制限
+  def restrict_admin_access
+    redirect_to root_url if current_user.admin?
+  end
+  
   # 管理権限者、または現在ログインしているユーザーを許可します。
   def admin_or_correct_user
     @user = User.find(params[:user_id]) if @user.blank?
@@ -57,13 +58,6 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  # 管理者は勤怠画面と編集の権限はありません。
-  def admin_limit
-    if current_user.admin?
-      flash[:danger] = "権限がありません。"
-      redirect_to root_url
-    end
-  end
 
   def set_one_month
     @first_day = params[:date].nil? ?

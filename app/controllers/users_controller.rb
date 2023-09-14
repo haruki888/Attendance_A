@@ -6,8 +6,7 @@ class UsersController < ApplicationController
   before_action :logged_in_user, only: %i[index edit update destroy edit_basic_info update_basic_info]
   before_action :current_user, only: %i[edit update show]
   before_action :admin_user, only: %i[index destroy edit_basic_info update_basic_info]
-  before_action :admin_limit, only: %i[show]
-  before_action :admin_or_correct_user, only: %i[show]
+  before_action :restrict_admin_access, only: %i[show]
   before_action :set_one_month, only: %i[show show_verify]
 
   def index
