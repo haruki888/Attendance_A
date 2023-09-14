@@ -155,9 +155,9 @@
                 <%= f.hidden_field :one_month_apply_status, value: "申請中" %>
                 <%= f.hidden_field :apply, value: @first_day %>
                 <!--one_month_apply_statusフィールドに "申請中"、 applyフィールドに@first_dayの値を設定します。この値はフォーム送信時にサーバーに送信される。-->
-                  <% if @attendance.one_month_approval_status.nil? %>
+                  <% if @attendance.one_month_apply_status.nil? && @attendance.one_month_approval_status.nil? %>
                     <%= "所属長承認 未" %>
-                  <% elsif @attendance.one_month_approval_status == "申請中" %>
+                  <% elsif @attendance.one_month_apply_status == "申請中" %>
                     <%= "#{@attendance.one_month_apply_superior}へ申請中" %>
                   <% elsif @attendance.one_month_approval_status == "否認" %>
                     <%= "#{@attendance.one_month_apply_superior}より否認" %>
