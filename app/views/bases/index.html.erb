@@ -9,7 +9,7 @@
             <th></th>
             <th>拠点番号</th>
             <th>拠点名</th>
-            <th>拠点種類</th>
+            <th>勤怠種類</th>
           </tr>
         </thead>
         
@@ -17,28 +17,31 @@
           <tbody>
             <tr>
               <td><%= link_to "修正", edit_basis_path(base), remote: true, class: "btn btn-primary" %></td>
-              <td><%= link_to "削除", base, method: :delete, data: {confirm: "削除してよろしいですか?" }, class: "btn btn-primary" %></td>
+              <td><%= link_to "削除", base, method: :delete, data: { confirm: "削除してよろしいですか?" }, class: "btn btn-primary" %></td>
               <td><%= base.base_number %></td>
               <td><%= base.base_name %></td>
               <td><%= base.base_type %></td>
             </tr>
-          </toboy>
+          </tbody>
         <% end %>
     </table>
-    
-    <div class="panel-group">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="panel-title">
-            <button data-toggle="collapse" data-target="#collapse" type="button" class = "btn btn-primary btn-lg">拠点情報追加</button>
-          </div>                                        
-        </div>
-        <div id="collapse" class="panel-collapse collapse">
-          <div class="panel-body">
-            <%= render 'form.index' %>
-          </div>
-        </div>
-      </div>
+      <tr>
+        <td colspan="5">
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-heading", "panel panel-primary">
+                <div class="panel-title">
+                  <button type="button" class="btn btn-lg btn-primary" data-toggle="collapse" data-target="#collapse" %>拠点情報追加</button>
+                </div>
+              </div>
+              <div id="collapse" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <%= render 'bases/new' %>
+                </div>
+              </div>
+            </div>
+        </td>
+      </tr>  
     </div>      
 
 <!--モーダルウィンドウ表示-->
