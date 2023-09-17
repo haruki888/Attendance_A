@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   resources :users do
     collection { post :import }         #:idでurlを識別する必要がない場合はcollectionで設定
     member do                 #:idがつくURIを生成する
+      get 'search', to: 'users#search' 
       get 'edit_basic_info'                     #基本情報編集
       patch 'update_basic_info'                 #基本情報更新
 
