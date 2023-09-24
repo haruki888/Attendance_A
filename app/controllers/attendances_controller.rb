@@ -36,25 +36,23 @@ class AttendancesController < ApplicationController
   end
 
 
-  # 勤怠編集更新
+# 勤怠編集更新
   def update_one_month
     request_count = 0
     ActiveRecord::Base.transaction do
       attendances_params.each do |id, item|
-        attendance = Attendance.find(id)
         if item[:request_change_superior].present? && item[:note].present?
           if item[:after_started_at].present? && item[:after_finished_at].blank?
             flash[:danger] = '退社時間を入力してください。'
             redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
-          end  
-          if item[:after_started_at].blank? && item[:after_finished_at].present?
+          elsif item[:after_started_at].blank? && item[:after_finished_at].present?
             flash[:danger] = '出勤時間を入力してください。'
             redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+          # elsif item[:after_started_at].present? && item[:after_finished_at].present? && item[:after_started_at] > item[:after_finished_at] && item[:next_day].blank?
+          #   flash[:danger] = '出勤時間が退勤時間より後になっています。'
+          #   redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
           end
-          if item[:after_started_at] > item[:after_finished_at] && item[:next_day] == false
-            flash[:danger] = '出勤時間が退勤時間より後になっています。'
-            redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
-          end
+          attendance = Attendance.find(id)
           item[:request_change_status] = "申請中"
           request_count += 1
           attendance.update!(item)
@@ -65,14 +63,12 @@ class AttendancesController < ApplicationController
         redirect_to user_url(date: params[:date]) and return
       else
         flash[:danger] = "未入力箇所があります。"	
-        redirect_to attendances_edit_one_month_user_url(date: params[:date])	
-        return
+        redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
       end
-    end
+    end  
   rescue ActiveRecord::RecordInvalid
     flash[:danger] = "勤怠情報に不備があります。再度確認してください。"
-    redirect_to attendances_edit_one_month_user_url(date: params[:date])
-    return
+    redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
 
 
