@@ -2,7 +2,6 @@ class User < ApplicationRecord
   require 'csv'
   has_many :attendances, dependent: :destroy
   attribute :scheduled_end_time, :time
-  #attr = attribute(属性）
   attr_accessor :remember_token #記憶トークンとユーザーをremember_tokenという仮想の属性を作成します。
   before_save { self.email = email.downcase } #selfはユーザーオブジェクトを指す
   
@@ -88,4 +87,3 @@ class User < ApplicationRecord
     "superior", "admin", "password"]
   end
 end
-

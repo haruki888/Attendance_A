@@ -15,6 +15,7 @@ class UsersController < ApplicationController
   end
  
   def show
+    authorize @user
     @attendance = @user.attendances.find_by(worked_on: Date.current.beginning_of_month)
     @superiors = User.where(superior: true).where.not(id: @user.id)#一般ユーザーでなく上長を取得する。
     @worked_sum = @attendances.where.not(started_at: nil).count#出勤がない日以外を取得し、合計を出す。
@@ -54,12 +55,13 @@ class UsersController < ApplicationController
   end
   
   def edit
+   authorize @user 
   end
   
   def update
     if @user.update_attributes(user_params)
       flash[:success] = "ユーザー情報を更新しました。"
-      redirect_to @user
+      redirect_to root_url
     else
       render :edit
     end
