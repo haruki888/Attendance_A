@@ -4,9 +4,8 @@ class AttendancesController < ApplicationController
   before_action :set_user, only: %i[edit_one_month update_one_month edit_request_change update_request_change  update_one_month_apply edit_overtime_approval]
   before_action :set_user_id, only: %i[update edit_request_change update_request_change edit_request_overtime update_request_overtime edit_overtime_approval update_overtime_approval edit_one_month_approval update_one_month_approval edit_fix_log]
   before_action :set_attendance_id, only: %i[update edit_request_overtime update_request_overtime edit_overtime_approval]
-  before_action :logged_in_user, only: %i[update edit_one_month]
-  before_action :restrict_admin_access, only: %i[edit_one_month]
-  before_action :admin_or_correct_user, only: %i[update edit_one_month update_one_month]
+  before_action :logged_in_user, only: %i[update edit_one_month edit_fix_log]
+  before_action :admin_access, only: %i[edit_one_month update_one_month edit_fix_log]
   before_action :set_one_month, only: %i[edit_one_month edit_fix_log update_one_month_apply]
 
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直して下さい。"

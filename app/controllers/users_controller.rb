@@ -4,9 +4,9 @@ class UsersController < ApplicationController
   
   before_action :set_user, only: %i[show edit update update_basic_info destroy commuting_employee show_verify]
   before_action :logged_in_user, only: %i[index edit update destroy edit_basic_info update_basic_info]
-  before_action :current_user, only: %i[edit update show]
-  before_action :admin_user, only: %i[index destroy edit_basic_info update_basic_info]
-  before_action :restrict_admin_access, only: %i[show]
+  before_action :correct_user, only: %i[edit update show]
+  before_action :admin_user, only: %i[index destroy edit_basic_info update_basic_info commuting_employee]
+  before_action :admin_access, only: %i[show]
   before_action :set_one_month, only: %i[show show_verify]
 
   def index
@@ -15,7 +15,6 @@ class UsersController < ApplicationController
   end
  
   def show
-    authorize @user
     @attendance = @user.attendances.find_by(worked_on: Date.current.beginning_of_month)
     @superiors = User.where(superior: true).where.not(id: @user.id)#一般ユーザーでなく上長を取得する。
     @worked_sum = @attendances.where.not(started_at: nil).count#出勤がない日以外を取得し、合計を出す。
@@ -55,7 +54,6 @@ class UsersController < ApplicationController
   end
   
   def edit
-   authorize @user 
   end
   
   def update
@@ -77,7 +75,7 @@ class UsersController < ApplicationController
   end
   
   def update_basic_info
-    if @user.update_attributes(basic_info_params)
+    if @user.update(basic_info_params)
       flash[:success] = "#{@user.name}の基本情報は更新しました。"
     else
       flash[:danger] = "#{@user.name}の更新は失敗しました。<br>" + @user.errors.full_messages.join("<br>")
@@ -97,9 +95,11 @@ class UsersController < ApplicationController
     redirect_to users_url
   end
 
+
   def commuting_employee
     @users = User.all.order(:id)
   end
+
 
   def search
      #Viewのformで取得したパラメータをモデルに渡す
@@ -107,8 +107,7 @@ class UsersController < ApplicationController
   end
 
   
-  private #user_paramsメソッドは、Usersコントローラーの内部でのみ実行されます。
-          #Web経由で外部のユーザーが知る必要は無いため、次に記すようにRubyのprivateキーワードを用いて
+  private #Web経由で外部のユーザーが知る必要は無いため、次に記すようにRubyのprivateキーワードを用いて
           #外部からは使用できないようにする。
 
 
@@ -122,7 +121,7 @@ class UsersController < ApplicationController
   def basic_info_params
     params.require(:user).permit(:name, :email, :affiliation, :employee_number, :uid,
                                 :password, :password_confirmation, :basic_work_time,
-                                :designated_work_start_time, :designaed_work_end_time)
+                                :designated_work_start_time, :designated_work_end_time)
   end
   
   
@@ -136,8 +135,7 @@ class UsersController < ApplicationController
       attendances.each do |day|
         #表の行に入る値を定義
         values = [ 
-          l(day.worked_on, format: :default),
-          $days_of_the_week[day.worked_on.wday],
+          l(day.worked_on, format: :long),
           if day.started_at.present? && (day.request_change_status == "承認").present?
             l(day.started_at, format: :time)
           else

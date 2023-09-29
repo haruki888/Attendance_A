@@ -1,7 +1,6 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception          #CSRF対策(クロスサイトリクエストフォージェリ)
   include SessionsHelper                         #サイトに攻撃用のコードを仕込むことで、アクセスした
-  include Pundit                                 #ユーザーに対し意図しない操作を行わせる攻撃のこと
   $days_of_the_week = %w{日 月 火 水 木 金 土}   #<%= csrf_meta_tags %> applicaiton.html.erb.rbとセット
   
   #$days_of_the_week → グローバル変数
@@ -36,29 +35,28 @@ class ApplicationController < ActionController::Base
   
   # アクセスしたユーザーが現在ログインしているユーザーか確認します。
   def correct_user
-    redirect_to root_url unless current_user?(@user)
+    redirect_to root_url unless current_user?(@user) || current_user.admin?
   end
   
-  # システム管理権限所有かどうか判定します。
+  #管理者でなければ、画面トップへ。
   def admin_user
     redirect_to root_url unless current_user.admin?
   end
-
-  #管理者のアクセスを制限
-  def restrict_admin_access
+  
+  #管理者のアクセスを制限。
+  def admin_access
     redirect_to root_url if current_user.admin?
   end
   
-  # 管理権限者、または現在ログインしているユーザーを許可します。
-  def admin_or_correct_user
-    @user = User.find(params[:user_id]) if @user.blank?
-    unless current_user?(@user) || current_user.admin?
-      flash[:danger] = "編集権限がありません。"
-      redirect_to(root_url)
-    end
-  end
+  # #管理者、社員のアクセスを制限。
+  # def admin_or_correct_user
+  #   @user = User.find(params[:user_id]) if @user.blank?
+  #   unless current_user?(@user) || current_user.admin?
+  #     flash[:danger] = "編集権限がありません。"
+  #     redirect_to root_url
+  #   end
+  # end
   
-
   def set_one_month
     @first_day = params[:date].nil? ?
     Date.current.beginning_of_month : params[:date].to_date 
@@ -77,6 +75,6 @@ class ApplicationController < ActionController::Base
   
   rescue ActiveRecord::RecordInvalid 
     flash[:danger] = "ページ情報の取得に失敗しました、再アクセスしてください。"
-    redirect_to root_url
+    redirect_to root_url and return
   end
 end

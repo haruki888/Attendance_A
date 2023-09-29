@@ -80,6 +80,7 @@ class User < ApplicationRecord
     end 
   end
   
+ 
   # ユーザー一覧　ユーザー編集　更新を許可するカラムを定義
   def self.updatable_attributes
     ["name", "email", "affiliation", "employee_number", "uid",
