@@ -47,9 +47,6 @@ class AttendancesController < ApplicationController
           elsif item[:after_started_at].blank? && item[:after_finished_at].present?
             flash[:danger] = '出勤時間を入力してください。'
             redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
-          # elsif item[:after_started_at].present? && item[:after_finished_at].present? && item[:after_started_at] > item[:after_finished_at] && item[:next_day].blank?
-          #   flash[:danger] = '出勤時間が退勤時間より後になっています。'
-          #   redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
           end
           attendance = Attendance.find(id)
           item[:request_change_status] = "申請中"
