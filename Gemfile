@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby  '3.1.0'
+ruby  '3.1.4'
 gem 'rails',        '~> 5.1.6'
 gem 'rails-i18n'
 gem 'bcrypt'
@@ -15,7 +15,7 @@ gem 'coffee-rails', '~> 4.2'
 gem 'jquery-rails'
 gem 'turbolinks',   '~> 5'
 gem 'jbuilder',     '~> 2.5'
-gem 'ransack'
+
 gem 'rounding'#時間単位の区切り設定
 gem 'roo'#（Excel, CSV, OpenOffice, GoogleSpreadSheetを開くことが可能）
 gem 'pry-rails'#binding.pry(debug)
@@ -23,7 +23,6 @@ gem 'pry-rails'#binding.pry(debug)
 group :development, :test do
   gem 'sqlite3', '1.3.13'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem "meta_request"
 end
 
 group :development do
