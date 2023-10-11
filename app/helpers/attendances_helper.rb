@@ -11,21 +11,17 @@ module AttendancesHelper  #ViewをDRY（Don’t Repeat Yourself）に作る
   end
 
   # 出勤時間と退勤時間を受け取り、実際の労働時間を秒単位で在社時間を計算して返します。
-  def working_times(start, finish, next_day)
-    if next_day
-      format("%.2f", (finish- start) / 60 / 60.0 + 24)
-    else
-      format("%.2f", (finish - start) / 60 / 60.0)
-    end
+  def working_times(start, finish)
+    format("%.2f", (((finish - start) / 60) / 60.0))
   end
   
   #時間外時間
   def working_overtimes(finish, end_time, next_day)
-      if next_day
-        format("%.2f", ((end_time.hour - finish.hour) + ((end_time.min - finish.min) / 60.0) + 24))
-      else
-        format("%.2f", (end_time.hour - finish.hour) + ((end_time.min - finish.min) / 60.0))
-      end
+    if next_day == "1"
+      format("%.2f", (end_time.hour - finish.hour) + ((end_time.min - finish.min) / 60.0) + 24)
+    else
+      format("%.2f", (end_time.hour - finish.hour) + (end_time.min - finish.min) / 60.0)
+    end
   end
 
   
@@ -42,5 +38,4 @@ module AttendancesHelper  #ViewをDRY（Don’t Repeat Yourself）に作る
     end
     return attendances
   end
-end 
-
+end

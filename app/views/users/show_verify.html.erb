@@ -66,8 +66,8 @@
           <td><%= l(day.finished_at, format: :minute) if day.finished_at.present? %></td>
           <td>
             <% if day.started_at.present? && day.finished_at.present? %>
-              <%= working_times(day.started_at, day.finished_at, day.next_day) %>
-              <% @total_working_times = @total_working_times.to_f + working_times(day.started_at, day.finished_at, day.next_day).to_f %>
+              <%= working_times(day.started_at, day.finished_at) %>
+              <% @total_working_times = @total_working_times.to_f + working_times(day.started_at, day.finished_at).to_f %>
             <% end %>
           </td>
           <td><%= day.note %></td>
@@ -81,17 +81,21 @@
           <td><%= day.work_description %></td>
           <td>
             <% if day.request_overtime_status == "申請中" %>
-              <%= "#{day.request_overtime_superior}へ残業#{day.request_overtime_status}" %>
+              <%= "#{day.request_overtime_superior}へ残業#{day.request_overtime_status}" %><br>
             <% elsif day.request_overtime_status == "承認" || day.request_overtime_status == "否認" %>
-              <%= "#{day.request_overtime_superior}からの残業#{day.request_overtime_status}" %>
+              <%= "#{day.request_overtime_superior}より残業#{day.request_overtime_status}" %><br>
+            <% elsif day.request_overtime_status == "なし" %>
+              <%= "#{day.request_overtime_superior}より残業承認なし" %><br>
             <% end %>
             <% if day.request_change_status == "申請中" %>
-              <%= "#{day.request_change_superior}へ勤怠変更#{day.request_change_status}" %>
+              <%= "#{day.request_change_superior}へ勤怠変更#{day.request_change_status}" %><br>
             <% elsif day.request_change_status == "承認" || day.request_change_status == "否認" %>
-              <%= "#{day.request_change_superior}より勤怠変更#{day.request_change_status}" %>
+              <%= "#{day.request_change_superior}より勤怠変更#{day.request_change_status}" %><br>
+            <% elsif day.request_change_status == "なし" %>
+              <%= "#{day.request_change_superior}より勤怠変更承認なし" %><br>
             <% end %>
           </td>  
-        </tr>
+         </tr>
       <% end %>
     </tbody>
  </table>
