@@ -16,11 +16,11 @@ module AttendancesHelper  #ViewをDRY（Don’t Repeat Yourself）に作る
   end
   
   #時間外時間
-  def working_overtimes(finish, end_time, next_day)
-    if next_day == "1"
-      format("%.2f", (end_time.hour - finish.hour) + ((end_time.min - finish.min) / 60.0) + 24)
+  def working_overtimes(scheduled_end_time, designated_work_end_time, overtime_next_day)
+    if overtime_next_day == true
+      format("%.2f", (scheduled_end_time.hour - designated_work_end_time.hour) + (scheduled_end_time.min - designated_work_end_time.min) / 60.0 + 24)
     else
-      format("%.2f", (end_time.hour - finish.hour) + (end_time.min - finish.min) / 60.0)
+      format("%.2f", (scheduled_end_time.hour - designated_work_end_time.hour) + (scheduled_end_time.min - designated_work_end_time.min) / 60.0)
     end
   end
 

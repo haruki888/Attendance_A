@@ -75,7 +75,7 @@
           <td><%= day.scheduled_end_time.strftime("%M") if day.scheduled_end_time.present? %></td>
           <td>
             <% if day.scheduled_end_time.present? %>
-              <%= working_overtimes(day.started_at, day.finished_at, day.next_day) %>
+              <%= working_overtimes(day.scheduled_end_time, @user.designated_work_end_time, day.overtime_next_day) %>
             <% end %>
           </td>
           <td><%= day.work_description %></td>

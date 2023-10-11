@@ -131,7 +131,7 @@ class AttendancesController < ApplicationController
       flash[:danger] = "未入力欄があります。"
       redirect_to user_url(@user) and return
     elsif @attendance.started_at.blank? || @attendance.finished_at.blank?
-      flash[:danger] = "勤怠付き忘れは残業申請できません。"
+      flash[:danger] = "出勤か退勤どちらか打刻していなと残業申請出来ません。"
       redirect_to user_url(@user) and return
     end
     if @attendance.update(request_overtime_params)
@@ -170,6 +170,7 @@ class AttendancesController < ApplicationController
           item[:scheduled_end_time] = nil if item[:scheduled_end_time].present?
           item[:designated_work_end_time] = nil if item[:designated_work_end_time].present?
           item[:work_description] = nil if item[:work_description].present?
+          item[:overtime_next_day] = nil if item[:overtime_next_day].present?
         else
           flash[:danger] = "無効な残業申請ステータスです。"
           redirect_to user_url(@user) and return
