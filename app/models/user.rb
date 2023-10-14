@@ -11,10 +11,7 @@ class User < ApplicationRecord
   validates :email, presence: true, length: { maximum: 100 },
             format: { with: VALID_EMAIL_REGEX }, #VALID_EMAIL_REGEX定数に正規表現を定義し、formatバリデーションを追加し、
             uniqueness: true                     #withで正規表現を指定することでメールアドレスのフォーマットを制限しています。
-  #validates :department, length: { in: 2..50 }, allow_blank: true
-  validates :affiliation, length: { in: 2..50 }, allow_blank: true#値が空の場合はバリデーションを実行しない
-  validates :uid, presence: true, uniqueness: true
-  validates :employee_number, presence: true, uniqueness: true
+  validates :affiliation, length: { in: 2..50 }, allow_blank: true#値が空の場合はバリデーションを実行しない  #validates :employee_number, presence: true, uniqueness: true
   validates :basic_work_time, presence: true
   validates :work_time, presence: true
   validates :designated_work_start_time, presence: true

@@ -35,27 +35,34 @@ class ApplicationController < ActionController::Base
   
   # アクセスしたユーザーが現在ログインしているユーザーか確認します。
   def correct_user
-    redirect_to root_url unless current_user?(@user) || current_user.admin?
+    unless current_user?(@user)
+      redirect_to root_url 
+    end
   end
   
   #管理者でなければ、画面トップへ。
   def admin_user
-    redirect_to root_url unless current_user.admin?
+    unless current_user.admin?
+      redirect_to root_url
+    end
+  end
+  
+  # 管理権限者、または現在ログインしているユーザーを許可します。
+  def admin_or_correct_user
+    @user = User.find(params[:user_id]) if @user.blank?
+    unless current_user?(@user) || current_user.admin?
+      flash[:danger] = "編集権限がありません。"
+      redirect_to root_url
+    end
   end
   
   #管理者のアクセスを制限。
   def admin_access
-    redirect_to root_url if current_user.admin?
+    if current_user.admin?
+      redirect_to root_url
+    end
   end
-  
-  # #管理者、社員のアクセスを制限。
-  # def admin_or_correct_user
-  #   @user = User.find(params[:user_id]) if @user.blank?
-  #   unless current_user?(@user) || current_user.admin?
-  #     flash[:danger] = "編集権限がありません。"
-  #     redirect_to root_url
-  #   end
-  # end
+
   
   def set_one_month
     @first_day = params[:date].nil? ?
@@ -75,6 +82,6 @@ class ApplicationController < ActionController::Base
   
   rescue ActiveRecord::RecordInvalid 
     flash[:danger] = "ページ情報の取得に失敗しました、再アクセスしてください。"
-    redirect_to root_url and return
+    redirect_to root_url
   end
 end

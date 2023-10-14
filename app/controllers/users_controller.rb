@@ -1,16 +1,14 @@
 class UsersController < ApplicationController
  
-  include UsersHelper
-  
   before_action :set_user, only: %i[show edit update update_basic_info destroy commuting_employee show_verify]
   before_action :logged_in_user, only: %i[index edit update destroy edit_basic_info update_basic_info]
-  before_action :correct_user, only: %i[edit update show]
+  before_action :correct_user, only: %i[edit update] 
   before_action :admin_user, only: %i[index destroy edit_basic_info update_basic_info commuting_employee]
   before_action :admin_access, only: %i[show]
   before_action :set_one_month, only: %i[show show_verify]
 
   def index
-    @users = User.paginate(page: params[:page], per_page: 17). search(params[:search])
+    @users = User.paginate(page: params[:page], per_page: 17)
     @users = @users.where('name LIKE ?', "%#{params[:search]}%") if params[:search].present?
   end
  
@@ -56,14 +54,16 @@ class UsersController < ApplicationController
   def edit
   end
   
+  #アカウント情報の更新（設定）
   def update
     if @user.update_attributes(user_params)
-      flash[:success] = "ユーザー情報を更新しました。"
-      redirect_to root_url
+      flash[:success] = "ユーザー情報を更新しました"
+      redirect_to users_url
     else
+      flash[:danger] = "ユーザー情報を更新出来ませんでした。"
       render :edit
     end
-  end
+ end
   
   def destroy
     @user.destroy
@@ -122,7 +122,7 @@ class UsersController < ApplicationController
     params.require(:user).permit(:name, :email, :affiliation, :employee_number, :uid,
                                 :password, :password_confirmation, :basic_work_time,
                                 :designated_work_start_time, :designated_work_end_time)
-  end
+  end 
   
   
   #勤怠一覧CSVファイルエクスポート
@@ -136,13 +136,13 @@ class UsersController < ApplicationController
         #表の行に入る値を定義
         values = [ 
           l(day.worked_on, format: :long),
-          if day.started_at.present? && (day.request_change_status == "承認").present?
-            l(day.started_at, format: :time)
+          if day.after_started_at.present? && (day.request_change_status == "承認").present?
+            l(day.after_started_at, format: :time)
           else
             nil
           end,
-          if day.finished_at.present? && (day.request_change_status == "承認").present?
-            l(day.finished_at, format: :time)
+          if day.after_finished_at.present? && (day.request_change_status == "承認").present?
+            l(day.after_finished_at, format: :time)
           else
             nil
           end

@@ -163,6 +163,8 @@
                       <%= "#{@attendance.one_month_apply_superior}より否認" %>
                     <% elsif @attendance.one_month_approval_status == "承認" %>
                       <%= "#{@attendance.one_month_apply_superior}より承認" %>
+                    <% elsif @attendance.one_month_approval_status == "なし" %>
+                      <%= "#{@attendance.one_month_apply_superior}より承認なし" %>  
                     <% end %>
                   <br>
                   <%= f.collection_select :one_month_apply_superior, @superiors, :name, :name, { include_blank: "上長を選択して下さい" } %>
