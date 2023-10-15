@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   before_action :set_one_month, only: %i[show show_verify]
 
   def index
-    @users = User.paginate(page: params[:page], per_page: 17)
+    @users = User.order(created_at: :asc).paginate(page: params[:page], per_page: 17)
     @users = @users.where('name LIKE ?', "%#{params[:search]}%") if params[:search].present?
   end
  
@@ -63,7 +63,7 @@ class UsersController < ApplicationController
       flash[:danger] = "ユーザー情報を更新出来ませんでした。"
       render :edit
     end
- end
+  end
   
   def destroy
     @user.destroy
