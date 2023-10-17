@@ -140,7 +140,7 @@ class AttendancesController < ApplicationController
       flash[:danger] = "未入力欄があります."
       redirect_to user_url(@user) and return
     elsif @attendance.started_at.nil? && @attendance.finished_at.nil?
-      flash[:danger] = "出勤時間または退勤時間を入力してください."
+      flash[:danger] = "無勤では残業申請できません。"
       redirect_to user_url(@user) and return
     else
       if @attendance.update(request_overtime_params)
