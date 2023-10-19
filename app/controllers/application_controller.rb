@@ -36,6 +36,7 @@ class ApplicationController < ActionController::Base
   # アクセスしたユーザーが現在ログインしているユーザーか確認します。
   def correct_user
     unless current_user?(@user)
+      flash[:danger] = "個人情報にはアクセス出来ません。"
       redirect_to root_url 
     end
   end

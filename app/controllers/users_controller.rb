@@ -2,7 +2,7 @@ class UsersController < ApplicationController
  
   before_action :set_user, only: %i[show edit update update_basic_info destroy commuting_employee show_verify]
   before_action :logged_in_user, only: %i[index edit update destroy edit_basic_info update_basic_info]
-  before_action :correct_user, only: %i[edit update] 
+  before_action :correct_user, only: %i[show edit update] 
   before_action :admin_user, only: %i[index destroy edit_basic_info update_basic_info commuting_employee]
   before_action :admin_access, only: %i[show]
   before_action :set_one_month, only: %i[show show_verify]
