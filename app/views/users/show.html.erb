@@ -154,18 +154,18 @@
                 <%= form_with(model: @attendance, url: attendances_update_one_month_apply_user_path(@user), local: true, method: :patch) do |f| %>
                   <%= f.hidden_field :one_month_apply_status, value: "申請中" %>
                   <%= f.hidden_field :apply, value: @first_day %>
-                  <!--one_month_apply_statusフィールドに "申請中"、 applyフィールドに@first_dayの値を設定します。この値はフォーム送信時にサーバーに送信される。-->
-                    <% if @attendance.one_month_apply_status.nil? && @attendance.one_month_approval_status.nil? %>
-                      <%= "所属長承認 未" %>
-                    <% elsif @attendance.one_month_apply_status == "申請中" %>
-                      <%= "#{@attendance.one_month_apply_superior}へ申請中" %>
-                    <% elsif @attendance.one_month_approval_status == "否認" %>
-                      <%= "#{@attendance.one_month_apply_superior}より否認" %>
-                    <% elsif @attendance.one_month_approval_status == "承認" %>
-                      <%= "#{@attendance.one_month_apply_superior}より承認" %>
-                    <% elsif @attendance.one_month_approval_status == "なし" %>
-                      <%= "#{@attendance.one_month_apply_superior}より承認なし" %>  
-                    <% end %>
+                  <!-- フォームが送信された時に"申請中"、日付情報を送られる -->
+                  <% if @attendance.one_month_apply_status.nil? %>
+                    <%= "所属長承認 未" %>
+                  <% elsif @attendance.one_month_apply_status == "申請中" %>
+                    <%= "#{@attendance.one_month_apply_superior}へ申請中" %>
+                  <% elsif @attendance.one_month_approval_status == "否認" %>
+                    <%= "#{@attendance.one_month_approval_superior}より否認" %>
+                  <% elsif @attendance.one_month_approval_status == "承認" %>
+                    <%= "#{@attendance.one_month_approval_superior}より承認" %>
+                  <% elsif @attendance.one_month_approval_status == "なし" %>
+                    <%= "#{@attendance.one_month_approval_superior}より承認なし" %>
+                  <% end %>
                   <br>
                   <%= f.collection_select :one_month_apply_superior, @superiors, :name, :name, { include_blank: "上長を選択して下さい" } %>
                   <%= f.submit "申請", class: "btn btn-primary btn-block" %>

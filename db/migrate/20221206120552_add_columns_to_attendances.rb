@@ -4,6 +4,7 @@ class AddColumnsToAttendances < ActiveRecord::Migration[5.1]
     #1ヶ月勤怠申請
     add_column :attendances, :one_month_apply_superior, :string                       #1ヶ月勤怠申請上長
     add_column :attendances, :one_month_apply_status, :string                         #1ヶ月勤怠申請状態
+    add_column :attendances, :one_month_approval_superior, :string                    #1ヶ月勤怠申請承認上長
     add_column :attendances, :one_month_approval_status, :string                      #1ヶ月勤怠申請承認状態
     add_column :attendances, :approval_check, :boolean, default: false                #1ヶ月勤怠申請承認チェック
     

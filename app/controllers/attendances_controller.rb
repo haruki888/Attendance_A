@@ -41,7 +41,7 @@ class AttendancesController < ApplicationController
     request_count = 0
     ActiveRecord::Base.transaction do
       attendances_params.each do |id, item|
-        if item[:request_change_superior].present? && item[:note].present?
+        if item[:request_change_superior].present?
           if item[:after_started_at].present? && item[:after_finished_at].blank?
             flash[:danger] = "退社時間を入力してください。"
             redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
@@ -53,6 +53,9 @@ class AttendancesController < ApplicationController
             redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
           elsif item[:next_day] == "0" && item[:after_started_at].present? && item[:after_finished_at].present? && item[:after_started_at] > item[:after_finished_at]
             flash[:danger] = "退社時間が出勤時間よりも早いです。"
+            redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+          elsif item[:note].blank?
+            flash[:danger] = "備考欄に理由を入力してください。"
             redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
           end
           attendance = Attendance.find(id)
@@ -68,7 +71,7 @@ class AttendancesController < ApplicationController
         flash[:danger] = "未入力箇所があります。"	
         redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
       end
-    end  
+    end
   rescue ActiveRecord::RecordInvalid
     flash[:danger] = "勤怠情報に不備があります。再度確認してください。"
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
@@ -104,7 +107,6 @@ class AttendancesController < ApplicationController
           flash[:danger] = "指示者確認㊞を申請中以外で選択してください。"
           redirect_to user_url(@user) and return
         end
-  
         attendance.update(item)
         request_count += 1
       elsif item[:change_check] == "0"
@@ -117,13 +119,11 @@ class AttendancesController < ApplicationController
         end
       end
     end
-  
     if request_count > 0
       flash[:success] = "勤怠変更の申請結果を#{request_count}件送信しました."
     else
       flash[:danger] = "勤怠変更申請の承認が不十分です."
     end
-  
     redirect_to user_url(@user)
   end
 
@@ -216,8 +216,10 @@ class AttendancesController < ApplicationController
     @attendance = @user.attendances.find_by(worked_on: @first_day)      
     if one_month_apply_params[:one_month_apply_superior].present?
       flash[:success] = "所属長承認申請が送信されました。"
-    else
+    elsif one_month_apply_params[:one_month_apply_superior].blank?
+      one_month_apply_params[:one_month_apply_superior] = "上長を選択して下さい"
       flash[:danger] = "所属長を選択して下さい。"
+      redirect_to user_url(@user) and return
     end
       @attendance.update(one_month_apply_params)
       one_month_apply_params[:one_month_apply_status] = "申請中"
