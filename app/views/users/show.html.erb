@@ -155,16 +155,16 @@
                   <%= f.hidden_field :one_month_apply_status, value: "申請中" %>
                   <%= f.hidden_field :apply, value: @first_day %>
                   <!-- フォームが送信された時に"申請中"、日付情報を送られる -->
-                  <% if @attendance.one_month_apply_status.nil? %>
-                    <%= "所属長承認 未" %>
-                  <% elsif @attendance.one_month_apply_status == "申請中" %>
+                  <% if @attendance.one_month_apply_status == "申請中" %>
                     <%= "#{@attendance.one_month_apply_superior}へ申請中" %>
                   <% elsif @attendance.one_month_approval_status == "否認" %>
-                    <%= "#{@attendance.one_month_approval_superior}より否認" %>
+                    <%= "#{@attendance.one_month_apply_superior}より否認" %>
                   <% elsif @attendance.one_month_approval_status == "承認" %>
-                    <%= "#{@attendance.one_month_approval_superior}より承認" %>
+                    <%= "#{@attendance.one_month_apply_superior}より承認" %>
                   <% elsif @attendance.one_month_approval_status == "なし" %>
-                    <%= "#{@attendance.one_month_approval_superior}より承認なし" %>
+                    <%= "#{@attendance.one_month_apply_superior}より承認なし" %>
+                  <% else %>
+                    <%= "所属長承認 未" %>
                   <% end %>
                   <br>
                   <%= f.collection_select :one_month_apply_superior, @superiors, :name, :name, { include_blank: "上長を選択して下さい" } %>

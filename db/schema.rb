@@ -23,7 +23,6 @@ ActiveRecord::Schema.define(version: 20230131123847) do
     t.datetime "scheduled_end_time"
     t.string "one_month_apply_superior"
     t.string "one_month_apply_status"
-    t.string "one_month_approval_superior"
     t.string "one_month_approval_status"
     t.boolean "approval_check", default: false
     t.string "request_change_superior"

@@ -238,10 +238,7 @@ class AttendancesController < ApplicationController
     one_month_approval_params.each do |id, item|
       attendance = Attendance.find(id)
       if item[:approval_check] == '1'
-        if item[:one_month_approval_status] == "なし"
-          item[:one_month_approval_status] = nil
-          item[:one_month_apply_superior] = nil
-        elsif item[:one_month_approval_status] == "申請中"
+        if item[:one_month_approval_status] == "申請中"
           flash[:danger] = "指示者確認㊞は申請中以外で選択して下さい。"
           redirect_to user_url(@user) and return
         end
