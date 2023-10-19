@@ -168,6 +168,7 @@
                   <% end %>
                   <br>
                   <%= f.collection_select :one_month_apply_superior, @superiors, :name, :name, { include_blank: "上長を選択して下さい" } %>
+                  <!--セレクトボックスに最初の選択肢として "上長を選択して下さい" を表示-->
                   <%= f.submit "申請", class: "btn btn-primary btn-block" %>
                 <% end %>            
               <% end %>
