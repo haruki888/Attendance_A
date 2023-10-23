@@ -93,12 +93,10 @@ class AttendancesController < ApplicationController
       attendance = Attendance.find(id)
       if item[:change_check] == "1"
         if item[:request_change_status] == "承認"
-          if item[:before_started_at].present? && item[:before_finished_at].present?
-            item[:before_started_at] = attendance.started_at
-            item[:before_finished_at] = attendance.finished_at
-            item[:started_at] = attendance.after_started_at if attendance.after_started_at.present?
-            item[:finished_at] = attendance.after_finished_at if attendance.after_finished_at.present?
-          end
+          item[:before_started_at] = attendance.started_at
+          item[:before_finished_at] = attendance.finished_at
+          item[:started_at] = attendance.after_started_at
+          item[:finished_at] = attendance.after_finished_at
         elsif item[:request_change_status] == "なし"
           item[:request_change_status] = "なし" #更新後に勤怠画面（指示者確認欄に表示）
           item[:note] = nil
