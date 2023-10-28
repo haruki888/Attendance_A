@@ -93,10 +93,12 @@ class AttendancesController < ApplicationController
       attendance = Attendance.find(id)
       if item[:change_check] == "1"
         if item[:request_change_status] == "承認"
-          item[:before_started_at] = attendance.started_at
-          item[:before_finished_at] = attendance.finished_at
-          item[:started_at] = attendance.after_started_at
-          item[:finished_at] = attendance.after_finished_at
+          if attendance.before_started_at.blank? && attendance.before_finished_at.blank?
+            attendance.before_started_at = attendance.started_at
+            attendance.before_finished_at = attendance.finished_at
+          end
+          attendance.started_at = attendance.after_started_at
+          attendance.finished_at = attendance.after_finished_at
         elsif item[:request_change_status] == "なし"
           item[:request_change_status] = "なし" #更新後に勤怠画面（指示者確認欄に表示）
           item[:note] = nil
@@ -106,8 +108,6 @@ class AttendancesController < ApplicationController
           flash[:danger] = "指示者確認㊞を申請中以外で選択してください。"
           redirect_to user_url(@user) and return
         end
-        attendance.update(item)
-        request_count += 1
       elsif item[:change_check] == "0"
         if item[:request_change_status] == "申請中"
           flash[:danger] = "指示者確認㊞を申請中以外を選択し変更欄にチェックを入れてください。"
@@ -117,15 +117,15 @@ class AttendancesController < ApplicationController
           redirect_to user_url(@user) and return
         end
       end
+    attendance.update(item)
+    request_count += 1
+    item[:request_change_status] = nil
     end
     if request_count > 0
       flash[:success] = "勤怠変更の申請結果を#{request_count}件送信しました."
-    else
-      flash[:danger] = "勤怠変更申請の承認が不十分です."
+      redirect_to user_url(@user)
     end
-    redirect_to user_url(@user)
   end
-
 
   #残業申請モーダル
   def edit_request_overtime

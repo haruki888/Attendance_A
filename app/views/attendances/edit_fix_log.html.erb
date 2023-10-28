@@ -27,15 +27,15 @@
     </thead>
     <tbody>
       <% if @attendances.present? %>
-        <% @attendances.each do |day| %>
+        <% @attendances.each do |attendance| %>
           <tr>
-            <td><%= day.worked_on.strftime("%Y年%m月%d日") %></td>
-            <td style="width: 12.5%;"><%= l(day.started_at, format: :time) if day.started_at.present? %></td>
-            <td style="width: 12.5%;"><%= l(day.finished_at, format: :time) if day.finished_at.present? %></td>
-            <td style="width: 12.5%;"><%= l(day.after_started_at, format: :time) if day.after_started_at.present? %></td>
-            <td style="width: 12.5%;"><%= l(day.after_finished_at, format: :time) if day.after_finished_at.present? %></td>
-            <td><%= day.request_change_superior %></td>
-            <td><%= day.updated_at.strftime("%Y年%m月%d日") %></td>
+            <td><%= attendance.worked_on.strftime("%Y年%m月%d日") %></td>
+            <td style="width: 12.5%;"><%= l(attendance.before_started_at, format: :time) if attendance.before_started_at.present? %></td>
+            <td style="width: 12.5%;"><%= l(attendance.before_finished_at, format: :time) if attendance.before_finished_at.present? %></td>
+            <td style="width: 12.5%;"><%= l(attendance.started_at, format: :time) if attendance.after_started_at.present? %></td>
+            <td style="width: 12.5%;"><%= l(attendance.finished_at, format: :time) if attendance.after_finished_at.present? %></td>
+            <td><%= attendance.request_change_superior %></td>
+            <td><%= attendance.updated_at.strftime("%Y年%m月%d日") %></td>
           </tr>
         <% end %>
       <% end %>
