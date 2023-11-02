@@ -15,7 +15,7 @@ class AddColumnsToAttendances < ActiveRecord::Migration[5.1]
     add_column :attendances, :after_started_at, :datetime                             #変更後出勤時間         
     add_column :attendances, :after_finished_at, :datetime                            #変更後退勤時間
     add_column :attendances, :change_check, :boolean, default: false                  #勤怠変更確認チェック
-   
+
     #残業申請
     add_column :attendances, :request_overtime_superior, :string                      #残業申請上長
     add_column :attendances, :request_overtime_status, :string                        #残業申請状態

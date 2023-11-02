@@ -42,7 +42,3 @@ User.create!(name: "上長B",
                admin: false,
                superior: false)
 end
-
-
-
-

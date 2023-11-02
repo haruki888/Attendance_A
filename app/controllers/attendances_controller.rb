@@ -94,8 +94,8 @@ class AttendancesController < ApplicationController
       if item[:change_check] == "1"
         if item[:request_change_status] == "承認"
           if attendance.before_started_at.blank? && attendance.before_finished_at.blank?
-            attendance.before_started_at = attendance.started_at
-            attendance.before_finished_at = attendance.finished_at
+            attendance.before_started_at = attendance.after_started_at
+            attendance.before_finished_at = attendance.after_finished_at
           end
           attendance.started_at = attendance.after_started_at
           attendance.finished_at = attendance.after_finished_at
@@ -263,16 +263,10 @@ class AttendancesController < ApplicationController
     if params["select_year(1i)"].present? && params["select_month(2i)"].present?
       @first_day = Date.parse("#{params["select_year(1i)"]}/#{params["select_month(2i)"]}/1")
       # parseメソッドは、引数でJSON形式の文字列をRubyのオブジェクトに変換して返すメソッド
-    else
-      @first_day = nil
+      @attendances = @user.attendances.where(request_change_status: "承認", worked_on: @first_day..@first_day.end_of_month).order(:worked_on)
     end
-
     if params[:commit] == "リセット"
       @attendances = []
-    elsif @first_day.present?
-      @attendances = @user.attendances.where(request_change_status: "承認", worked_on: @first_day..@first_day.end_of_month).order(:worked_on)
-    else
-      @attendances = nil
     end
   end
 
