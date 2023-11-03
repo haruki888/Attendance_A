@@ -45,19 +45,24 @@ class AttendancesController < ApplicationController
         if item[:request_change_superior].present?
           if item[:after_started_at].present? && item[:after_finished_at].blank?
             flash[:danger] = "退社時間を入力してください。"
-            redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+            redirect_to attendances_edit_one_month_user_url(date: params[:date])
+            return
           elsif item[:after_started_at].blank? && item[:after_finished_at].present?
             flash[:danger] = "出勤時間を入力してください。"
-            redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+            redirect_to attendances_edit_one_month_user_url(date: params[:date])
+            return
           elsif item[:after_started_at].blank? && item[:after_finished_at].blank?
             flash[:danger] = "出勤時間と退勤時間を入力してください。"
-            redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+            redirect_to attendances_edit_one_month_user_url(date: params[:date])
+            return
           elsif item[:next_day] == "0" && item[:after_started_at].present? && item[:after_finished_at].present? && item[:after_started_at] > item[:after_finished_at]
             flash[:danger] = "退社時間が出勤時間よりも早いです。"
-            redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+            redirect_to attendances_edit_one_month_user_url(date: params[:date])
+            return
           elsif item[:note].blank?
             flash[:danger] = "備考欄に理由を入力してください。"
-            redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+            redirect_to attendances_edit_one_month_user_url(date: params[:date])
+            return
           end
           attendance = Attendance.find(id)
           item[:request_change_status] = "申請中" #更新後に勤怠画面（指示者確認欄に表示）
@@ -106,20 +111,22 @@ class AttendancesController < ApplicationController
           attendance.after_finished_at = nil if attendance.after_finished_at.present?
         elsif item[:request_change_status] == "申請中"
           flash[:danger] = "指示者確認㊞を申請中以外で選択してください。"
-          redirect_to user_url(@user) and return
-        end
+          redirect_to user_url(@user)
+          return
+        end 
       elsif item[:change_check] == "0"
         if item[:request_change_status] == "申請中"
           flash[:danger] = "指示者確認㊞を申請中以外を選択し変更欄にチェックを入れてください。"
-          redirect_to user_url(@user) and return
+          redirect_to user_url(@user)
+          return
         else
           flash[:danger] = "変更欄にチェックを入れてください。"
-          redirect_to user_url(@user) and return
+          redirect_to user_url(@user)
+          return
         end
       end
-    attendance.update(item)
-    request_count += 1
-    item[:request_change_status] = nil
+      attendance.update(item)
+      request_count += 1
     end
     if request_count > 0
       flash[:success] = "勤怠変更の申請結果を#{request_count}件送信しました."
@@ -137,10 +144,12 @@ class AttendancesController < ApplicationController
   def update_request_overtime
     if request_overtime_params[:request_overtime_superior].blank? || request_overtime_params[:scheduled_end_time].blank? || request_overtime_params[:work_description].blank? || request_overtime_params[:overtime_next_day].blank?
       flash[:danger] = "未入力欄があります."
-      redirect_to user_url(@user) and return
+      redirect_to user_url(@user)
+      return
     elsif @attendance.started_at.nil? && @attendance.finished_at.nil?
       flash[:danger] = "無勤では残業申請できません。"
-      redirect_to user_url(@user) and return
+      redirect_to user_url(@user)
+      return
     else
       if @attendance.update(request_overtime_params)
         params[:attendance][:request_overtime_status] = "申請中"
@@ -167,16 +176,19 @@ class AttendancesController < ApplicationController
         if item[:request_overtime_status] == "承認"
           if item[:designated_work_end_time].present? && item[:scheduled_end_time] > item[:designated_work_end_time]
             flash[:danger] = "申請の終了時間が指示の終了時間を超えています。"
-            redirect_to user_url(@user) and return
+            redirect_to user_url(@user)
+            return
           end
         elsif item[:request_overtime_status] == "否認"
           if item[:designated_work_end_time].present? && item[:scheduled_end_time] < item[:designated_work_end_time]
             flash[:danger] = "申請の終了時間が指示の終了時間より早いです。"
-            redirect_to user_url(@user) and return
+            redirect_to user_url(@user)
+            return
           end
         elsif item[:request_overtime_status] == "申請中"
           flash[:danger] = "指示者確認欄㊞が申請中になっています。"
-          redirect_to user_url(@user) and return
+          redirect_to user_url(@user)
+          return
         elsif item[:request_overtime_status] == "なし"
           item[:request_overtime_status] = "なし" # 更新後に勤怠画面（指示者確認欄に表示）
           item[:scheduled_end_time] = nil if item[:scheduled_end_time].present?
@@ -187,10 +199,12 @@ class AttendancesController < ApplicationController
       elsif item[:overtime_check] == "0"
         if item[:request_overtime_status] == "申請中"
           flash[:danger] = "変更チェックを入れ、指示者確認欄を申請中以外で選択してください。"
-          redirect_to user_url(@user) and return
+          redirect_to user_url(@user)
+          return
         elsif 
           flash[:danger] = "変更チェックを入れてください。"
-          redirect_to user_url(@user) and return
+          redirect_to user_url(@user)
+          return
         end
       end
       request_count += 1
@@ -218,11 +232,13 @@ class AttendancesController < ApplicationController
     elsif one_month_apply_params[:one_month_apply_superior].blank?
       one_month_apply_params[:one_month_apply_superior] = "上長を選択して下さい"
       flash[:danger] = "所属長を選択して下さい。"
-      redirect_to user_url(@user) and return
+      redirect_to user_url(@user)
+      return
     end
       @attendance.update(one_month_apply_params)
       one_month_apply_params[:one_month_apply_status] = "申請中"
-      redirect_to user_url(@user) and return
+      redirect_to user_url(@user)
+      return
   end
 
   #1ヶ月勤怠申請通知モーダル
@@ -239,11 +255,13 @@ class AttendancesController < ApplicationController
       if item[:approval_check] == '1'
         if item[:one_month_approval_status] == "申請中"
           flash[:danger] = "指示者確認㊞は申請中以外で選択して下さい。"
-          redirect_to user_url(@user) and return
+          redirect_to user_url(@user)
+          return
         end
       elsif item[:approval_check] == '0'
         flash[:danger] = "変更にチェックして下さい。"
-        redirect_to user_url(@user) and return
+        redirect_to user_url(@user)
+        return
       end
       item[:one_month_apply_status] = nil
       request_count += 1
@@ -254,7 +272,8 @@ class AttendancesController < ApplicationController
       redirect_to user_url(@user)
     else
       flash[:danger] = "1ヶ月申請承認が不十分です。"
-      redirect_to user_url(@user) and return
+      redirect_to user_url(@user)
+      return
     end
   end
 
