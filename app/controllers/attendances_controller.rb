@@ -282,10 +282,16 @@ class AttendancesController < ApplicationController
     if params["select_year(1i)"].present? && params["select_month(2i)"].present?
       @first_day = Date.parse("#{params["select_year(1i)"]}/#{params["select_month(2i)"]}/1")
       # parseメソッドは、引数でJSON形式の文字列をRubyのオブジェクトに変換して返すメソッド
-      @attendances = @user.attendances.where(request_change_status: "承認", worked_on: @first_day..@first_day.end_of_month).order(:worked_on)
+    else
+      @first_day = nil
     end
+
     if params[:commit] == "リセット"
       @attendances = []
+    elsif @first_day.present?
+      @attendances = @user.attendances.where(request_change_status: "承認", worked_on: @first_day..@first_day.end_of_month).order(:worked_on)
+    else
+      @attendances = nil
     end
   end
 
