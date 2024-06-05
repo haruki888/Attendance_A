@@ -19,14 +19,14 @@ class User < ApplicationRecord
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
                       #presence: trueを用いることでそのカラムの値が存在するかどうかをチェックできる。
-  # 渡された文字列のハッシュ値を返します。
+  # 渡された文字列のハッシュ化を行う。
   def User.digest(string)
     cost =
       if ActiveModel::SecurePassword.min_cost
         BCrypt::Engine::MIN_COST
       else
         BCrypt::Engine.cost
-      end
+      end                                    
     BCrypt::Password.create(string, cost: cost) #文字列をハッシュ化してBCrypt::Passwordインスタンスを返す。
   end                                           #ハッシュ化したい文字列stringとコストパラメータcostをBCrypt::Password.createメソッドに渡すと、渡した文字列をハッシュ化してくれる。
                                                 #コストパラメータを高く設定すると、よりセキュリティの高いハッシュ値を生成するらしい。
